@@ -1,3 +1,9 @@
 [submodule "packages/emacs-grammarly"]
 	path = packages/emacs-grammarly
 	url = https://github.com/mmagnus/emacs-grammarly.git
+[submodule "packages/evil"]
+	path = packages/evil
+	url = https://github.com/emacs-evil/evil.git
+[submodule "packages/evil-leader"]
+	path = packages/evil-leader
+	url = https://github.com/cofi/evil-leader.git
