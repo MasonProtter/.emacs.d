@@ -7,3 +7,6 @@
 [submodule "packages/evil-leader"]
 	path = packages/evil-leader
 	url = https://github.com/cofi/evil-leader.git
+[submodule "packages/julia-repl"]
+	path = packages/julia-repl
+	url = https://github.com/tpapp/julia-repl.git

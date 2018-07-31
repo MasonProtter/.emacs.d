@@ -1,0 +1,99 @@
+ls
+cd ..
+cd /usr/texbin
+ls
+mv splash.el mysplash.el
+which jupyter
+cd ~
+which jupyter
+cd ~/Documents/
+git clone git@github.com:MasonProtter/mal.git mal/
+cd mal
+mkdir julia0.7
+cd julia0.7/
+cd ..
+ls
+ls
+rm -r -f julia
+ls
+rm -r julia0.7/
+mkdir julia
+cd ..
+make cd ..
+git commit -m "completed step 0"
+git add *
+git commit -m "completed step 0"
+git push
+git rm -r julia
+cd ..
+git rm -r julia
+git commit -m "removed julia folder"
+git push
+cd julia
+ls
+ls
+ls
+ls -l
+chmod 755 run
+ls -l
+cd ..
+make cd ..
+git commit -m "completed step 0"
+git add *
+git commit -m "completed step 0"
+git push
+cd julia
+ls
+cp step0_repl.jl step1_read_print.jl
+ls
+julia
+julia
+cd ~/Documents/Z2gaugeProject/code
+ls
+ls
+cd ..
+mv -r code/ Z2Gauge/
+mv code/ Z2Gauge/
+ls
+mv code Z2Gauge
+ls
+cd Z2Gauge
+ls
+rm nearest_neighbors.jl\~
+rm NearestNeighbor.jl\~
+rm ED_no_spin.jl\~
+rm ED.jl\~
+rm ED_single_spin.jl\~
+ls
+ls
+cd ..
+ls
+cd Z2Gauge/
+ls
+git remote add origin git@github.com:MasonProtter/Z2Gauge.git
+git remote add origin git@github.com:MasonProtter/Z2Gauge.gitgit push -u origin master
+echo "# Z2Gauge" >> README.mdgit init
+git add README.mdgit commit -m "first commit"git remote add origin git@github.com:MasonProtter/Z2Gauge.git
+git push
+git push --set-upstream origin master
+git remote add origin git@github.com:MasonProtter/Z2Gauge.git
+git push
+git push -u origin master
+git push -u origin --all
+git init
+git remote add origin git@github.com:MasonProtter/Z2Gauge.git
+git push 
+git push --set-upstream origin master
+ls
+git add NearestNeighbor.jl 
+git commit -m "added 	nearest neighbor script"
+git push
+git pull
+julia
+ls
+git eliashberg.pdf eliashberg.tex 
+git add eliashberg.pdf eliashberg.tex 
+git commit -m "Got Eliashberg 	equations with two HS fiels"
+git push
+git push --set-upstream origin density_channel
+julia

@@ -9,6 +9,8 @@
 (add-to-list 'load-path "~/.emacs.d/packages/evil-leader/")
 (add-to-list 'load-path "~/.emacs.d/packages/evil/")
 (add-to-list 'load-path "~/.emacs.d/packages/emacs-grammarly/")
+;(add-to-list 'load-path "~/.emacs.d/packages/ESS/lisp/")
+(add-to-list 'load-path "~/.emacs.d/packages/ob-julia")
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
 (defconst home-directory "/users/mason/")
@@ -16,14 +18,14 @@
 (defconst config-directory (concat emacs-directory "config/"))
 #+END_SRC
 * Key Config
-** Evil
+** COMMENT Evil
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/evil")
-(require 'evil)
-(evil-mode 1)
+  (add-to-list 'load-path "~/.emacs.d/evil") ;
+  (require 'evil)
+  (evil-mode 1)
 #+END_SRC
 
-** Evil-Leader
+** COMMENT Evil-Leader
 #+BEGIN_SRC emacs-lisp
 (require 'evil-leader)
 (global-evil-leader-mode)
@@ -49,6 +51,7 @@
   "s" 'save-buffer
   "oe" 'eshell
   "os" 'shell
+  "ot" 'term
   "b"  'switch-to-buffer)
 
 (evil-leader/set-key-for-mode 'latex-mode
@@ -71,6 +74,66 @@
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-b") 'yank-pop)
 #+END_SRC
+** General
+#+BEGIN_SRC emacs-lisp
+(require 'general)
+(which-key-mode)
+
+(defconst my-leader [escape])
+
+(general-create-definer my-leader-def
+  ;; :prefix my-leader
+  ;; or without a variable
+  :prefix [escape])
+
+(which-key-add-key-based-replacements
+  "C-c f" "files"
+  "C-c fd" "dotfile"
+  "C-c fc" "config files"
+  "C-c <SPC>" "M-x"
+  "C-c o" "open"
+  "C-c m" "mode"
+  "C-c l" "LaTeX"
+  "C-c lp" "preview")
+
+(defun select-current-line ()
+  "Select the current line"
+  (interactive)
+  (end-of-line) ; move to end of line
+  (set-mark (line-beginning-position)))
+
+
+(my-leader-def
+  "<SPC>" 'helm-M-x
+  "ff" 'helm-find-files
+  "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
+  "fc" '(lambda () (interactive) (find-file config-directory))
+  "s" 'save-buffer
+  "oe" 'eshell
+  "os" 'shell
+  "ot" 'term
+  "b"  'switch-to-buffer
+  "l"  'select-current-line
+  "s"  'julia-repl-send-region-or-line)
+
+(my-leader-def
+  :keymaps 'org-mode-map
+  "s"  'julia-repl-send-region-or-line)
+
+(my-leader-def
+  :keymaps 'julia-mode-map
+  "s"  'julia-repl-send-region-or-line)
+
+(global-set-key (kbd "s-c") 'kill-ring-save)
+(global-set-key (kbd "s-x") 'kill-region)
+(global-set-key (kbd "s-v") 'yank)
+(global-set-key (kbd "s-b") 'yank-pop)
+
+#+END_SRC
+
+#+RESULTS:
+: yank-pop
+
 ** Region Wrap
 #+BEGIN_SRC emacs-lisp
 (require 'wrap-region)
@@ -92,7 +155,7 @@ With argument ARG, do this that many times."
 (global-set-key (kbd "A-<backspace>") 'backward-delete-word)
 #+END_SRC
 
- Make it so that sleected text gets deleted if I start typing
+ Make it so that selected text gets deleted if I start typing
 #+BEGIN_SRC emacs-lisp
 (delete-selection-mode 1)
 #+END_SRC
@@ -100,6 +163,8 @@ With argument ARG, do this that many times."
 * Helm
 #+BEGIN_SRC emacs-lisp
 (require 'helm-config)
+
+
 (global-set-key (kbd "M-x") #'helm-M-x)
 (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
 (global-set-key (kbd "C-x C-f") #'helm-find-files)
@@ -144,6 +209,10 @@ With argument ARG, do this that many times."
 #+END_SRC
 
 * Applications
+** Prog modes
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
 ** TeX
 #+BEGIN_SRC emacs-lisp
 (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
@@ -188,48 +257,74 @@ With argument ARG, do this that many times."
 (require 'emacs-grammarly)
 (global-set-key (kbd "C-c C-g") 'grammarly-save-region-and-run)
 #+END_SRC
+** ESS
+#+BEGIN_SRC emacs-lisp
+;; (require 'ess-site)
+;; (setq  inferior-julia-program-name "~/julia/./julia")
+#+END_SRC
 ** Org 
 #+BEGIN_SRC emacs-lisp
-    (require 'ob-ipython)
-    (org-babel-do-load-languages
-      'org-babel-load-languages
-      '((ipython . t)
-        ;; other languages..
-        ))
-    (setq ob-ipython-resources-dir "/Users/mason/Documents/ob_ipython_resources/")
-    (define-key evil-normal-state-map (kbd "M-<return>") 'org-babel-execute-src-block)
-    (define-key evil-insert-state-map (kbd "M-<return>") 'org-babel-execute-src-block)
-    ;; don't prompt me to confirm everytime I want to evaluate a block
-    (setq org-confirm-babel-evaluate nil)
+(with-eval-after-load "org"
+
+  (setq org-src-fontify-natively t
+	org-src-tab-acts-natively t
+	org-confirm-babel-evaluate nil
+	org-edit-src-content-indentation 0)
+
+  (require 'ob-ipython)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ipython . t)
+     ;; (julia . t)
+     ;; other languages..
+     ))
+  (setq ob-ipython-resources-dir "/Users/mason/Documents/ob_ipython_resources/")
+					;(define-key evil-normal-state-map (kbd "M-<return>") 'org-babel-execute-src-block)
+					;(define-key evil-insert-state-map (kbd "M-<return>") 'org-babel-execute-src-block)
+  ;; don't prompt me to confirm everytime I want to evaluate a block
+  (setq org-confirm-babel-evaluate nil)
+  (add-to-list 'org-structure-template-alist
+	       '("j" "#+BEGIN_SRC julia
+? 
+,#+END_SRC"))
+
+;;; display/update images in the buffer after I evaluate
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
 
-(exec-path-from-shell-initialize)
-(setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
+  (exec-path-from-shell-initialize)
+  (setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
 
-(setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3")
+  (setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3")
 
+  (add-to-list 'safe-local-variable-values
+             '(eval add-hook 'after-save-hook
+                    (lambda () (org-babel-tangle))
+                    nil t))
 
-(defun org-export-remove-prelim-headlines (tree backend info)
-  "Remove headlines tagged \"prelim\" while retaining their
-contents before any export processing."
-  (org-element-map tree org-element-all-elements
-    (lambda (object)
-      (when (and (equal 'headline (org-element-type object))
-                 (member "prelim" (org-element-property :tags object)))
-        (mapc (lambda (el)
-                ;; recursively promote all nested headlines
-                (org-element-map el 'headline
-                  (lambda (el)
-                    (when (equal 'headline (org-element-type el))
-                      (org-element-put-property el
-                        :level (1- (org-element-property :level el))))))
-                (org-element-insert-before el object))
-              (cddr object))
-        (org-element-extract-element object)))
-    info nil org-element-all-elements)
-  tree)
-(add-hook 'org-export-filter-parse-tree-functions
-           'org-export-remove-prelim-headlines)
+  (defun org-export-remove-prelim-headlines (tree backend info)
+    "Remove headlines tagged \"prelim\" while retaining their
+ contents before any export processing."
+    (org-element-map tree org-element-all-elements
+      (lambda (object)
+	(when (and (equal 'headline (org-element-type object))
+		   (member "prelim" (org-element-property :tags object)))
+	  (mapc (lambda (el)
+		  ;; recursively promote all nested headlines
+		  (org-element-map el 'headline
+		    (lambda (el)
+		      (when (equal 'headline (org-element-type el))
+			(org-element-put-property el
+						  :level (1- (org-element-property :level el))))))
+		  (org-element-insert-before el object))
+		(cddr object))
+	  (org-element-extract-element object)))
+      info nil org-element-all-elements)
+    tree)
+  (add-hook 'org-export-filter-parse-tree-functions
+	    'org-export-remove-prelim-headlines)
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
+)
 
 #+END_SRC
 ** Eshell
@@ -246,8 +341,31 @@ contents before any export processing."
 (add-to-list 'load-path "/Users/mason/julia-repl")
 (require 'julia-repl)
 (add-hook 'julia-mode-hook 'julia-repl-mode)
+;;(add-hook 'julia-mode-hook 'texfrag-mode)
 (julia-repl-set-executable "/users/mason/julia/./julia")
+(setenv "JULIA_NUM_THREADS" "4")
 
-(require 'iterm)
+;(require 'iterm)
 ;;(add-hook 'julia-mode-hook 'iterm)
 #+END_SRC
+
+** Common Lisp
+#+BEGIN_SRC emacs-lisp
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+(slime-setup '(slime-fancy))
+
+#+END_SRC
+** EIN
+#+BEGIN_SRC emacs-lisp
+;; (require 'ein)
+;; (require 'ein-loaddefs)
+;; (require 'ein-notebook)
+;; (require 'ein-subpackages)
+#+END_SRC
+* Misc
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode t)
+#+END_SRC
+
+
+
