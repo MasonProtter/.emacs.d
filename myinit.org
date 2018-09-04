@@ -6,16 +6,29 @@
 * Paths
 #+BEGIN_SRC emacs-lisp
 (load-library "url-handlers")
-(add-to-list 'load-path "~/.emacs.d/packages/evil-leader/")
-(add-to-list 'load-path "~/.emacs.d/packages/evil/")
-(add-to-list 'load-path "~/.emacs.d/packages/emacs-grammarly/")
-;(add-to-list 'load-path "~/.emacs.d/packages/ESS/lisp/")
-(add-to-list 'load-path "~/.emacs.d/packages/ob-julia")
-(add-to-list 'load-path "~/.emacs.d/packages/")
 
 (defconst home-directory "/users/mason/")
 (defconst emacs-directory (concat home-directory ".emacs.d/"))
 (defconst config-directory (concat emacs-directory "config/"))
+(defconst package-directory (concat emacs-directory "packages/"))
+
+(add-to-list 'load-path (concat package-directory ""))
+(add-to-list 'load-path (concat package-directory "evil-leader"))
+(add-to-list 'load-path (concat package-directory "evil"))
+(add-to-list 'load-path (concat package-directory "emacs-grammarly"))
+(add-to-list 'load-path (concat package-directory "julia-repl"))
+;; (add-to-list 'load-path (concat package-directory "ob-julia"))
+;; (add-to-list 'load-path (concat package-directory "ESS/lisp"))
+
+;; (add-to-list 'load-path "~/.emacs.d/packages/evil-leader/")
+;; (add-to-list 'load-path "~/.emacs.d/packages/evil/")
+;; (add-to-list 'load-path "~/.emacs.d/packages/emacs-grammarly/")
+;; ;(add-to-list 'load-path "~/.emacs.d/packages/ESS/lisp/")
+;; (add-to-list 'load-path "~/.emacs.d/packages/ob-julia")
+;; (add-to-list 'load-path "~/.emacs.d/packages/")
+;; (add-to-list 'load-path "/Users/mason/julia-repl")
+
+
 #+END_SRC
 * Key Config
 ** COMMENT Evil
@@ -76,73 +89,79 @@
 #+END_SRC
 ** General
 #+BEGIN_SRC emacs-lisp
-(require 'general)
-(which-key-mode)
+(use-package general
+  :ensure t
+  :init
+  (which-key-mode)
+  
+  (defconst my-leader [escape])
 
-(defconst my-leader [escape])
+  (general-create-definer my-leader-def
+    ;; :prefix my-leader
+    ;; or without a variable
+    :prefix [escape])
 
-(general-create-definer my-leader-def
-  ;; :prefix my-leader
-  ;; or without a variable
-  :prefix [escape])
+  (which-key-add-key-based-replacements
+    "C-c f" "files"
+    "C-c fd" "dotfile"
+    "C-c fc" "config files"
+    "C-c <SPC>" "M-x"
+    "C-c o" "open"
+    "C-c m" "mode"
+    "C-c l" "LaTeX"
+    "C-c lp" "preview")
 
-(which-key-add-key-based-replacements
-  "C-c f" "files"
-  "C-c fd" "dotfile"
-  "C-c fc" "config files"
-  "C-c <SPC>" "M-x"
-  "C-c o" "open"
-  "C-c m" "mode"
-  "C-c l" "LaTeX"
-  "C-c lp" "preview")
-
-(defun select-current-line ()
-  "Select the current line"
-  (interactive)
-  (end-of-line) ; move to end of line
-  (set-mark (line-beginning-position)))
+  (defun select-current-line ()
+    "Select the current line"
+    (interactive)
+    (end-of-line) ; move to end of line
+    (set-mark (line-beginning-position)))
 
 
-(my-leader-def
-  "<SPC>" 'helm-M-x
-  "ff" 'helm-find-files
-  "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
-  "fc" '(lambda () (interactive) (find-file config-directory))
-  "s" 'save-buffer
-  "oe" 'eshell
-  "os" 'shell
-  "ot" 'term
-  "b"  'switch-to-buffer
-  "l"  'select-current-line
-  "s"  'julia-repl-send-region-or-line)
+  (my-leader-def
+    "<SPC>" 'helm-M-x
+    "ff" 'helm-find-files
+    "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
+    "fc" '(lambda () (interactive) (find-file config-directory))
+    "s" 'save-buffer
+    "oe" 'eshell
+    "os" 'shell
+    "ot" 'term
+    "b"  'switch-to-buffer
+    "l"  'select-current-line
+    ;;"s"  'julia-repl-send-region-or-line
+    )
 
-(my-leader-def
-  :keymaps 'org-mode-map
-  "s"  'julia-repl-send-region-or-line)
+  (my-leader-def 
+    :keymaps 'LaTeX-mode-map
+    "mc" 'TeX-command-master
+    "mv" 'TeX-view
+    "mpb" 'preview-buffer
+    "mpr" 'preview-region
+    "mps" 'preview-section
+    "mpe" 'preview-environment
+    "mpd" 'preview-document
+    "me"  'LaTeX-environment)
 
-(my-leader-def
-  :keymaps 'julia-mode-map
-  "s"  'julia-repl-send-region-or-line)
-
-(global-set-key (kbd "s-c") 'kill-ring-save)
-(global-set-key (kbd "s-x") 'kill-region)
-(global-set-key (kbd "s-v") 'yank)
-(global-set-key (kbd "s-b") 'yank-pop)
+  (general-define-key 
+   "s-c" 'kill-ring-save
+   "s-x" 'kill-region
+   "s-v" 'yank
+   "s-b" 'yank-pop))
 
 #+END_SRC
-
-#+RESULTS:
-: yank-pop
-
 ** Region Wrap
 #+BEGIN_SRC emacs-lisp
-(require 'wrap-region)
-(wrap-region-global-mode t)
+(use-package wrap-region
+  :init
+  (wrap-region-global-mode t))
 #+END_SRC
 ** Multiple-Cursors
 #+BEGIN_SRC emacs-lisp
-(require 'multiple-cursors)
-(global-set-key (kbd "C-M-<mouse-1>") 'mc/add-cursor-on-click)
+(use-package multiple-cursors
+  :init
+  (general-define-key
+   "C-M-<mouse-1>" 'mc/add-cursor-on-click))
 #+END_SRC
 ** Misc.
 Don't add M-<backspace>'d words to kill ring
@@ -152,7 +171,9 @@ Don't add M-<backspace>'d words to kill ring
 With argument ARG, do this that many times."
   (interactive "p")
   (delete-region (point) (progn (backward-word arg) (point))))
-(global-set-key (kbd "A-<backspace>") 'backward-delete-word)
+
+(general-define-key 
+ "A-<backspace>" 'backward-delete-word)
 #+END_SRC
 
  Make it so that selected text gets deleted if I start typing
@@ -162,15 +183,16 @@ With argument ARG, do this that many times."
 
 * Helm
 #+BEGIN_SRC emacs-lisp
-(require 'helm-config)
+(use-package helm-config
+  :init
+  (general-define-key 
+   "M-x" #'helm-M-x
+   "C-x r b" #'helm-filtered-bookmarks
+   "C-x C-f" #'helm-find-files
+   "M-y" 'helm-show-kill-ring)
+  (helm-mode 1))
 
 
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
-(helm-mode 1)
 #+END_SRC
 
 * Doom-Theme
@@ -181,7 +203,7 @@ With argument ARG, do this that many times."
 
 ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
 ;; may have their own settings.
-(load-theme 'doom-one t)
+(load-theme 'atom-one-dark t)
 
 ;; Enable flashing mode-line on errors
 (doom-themes-visual-bell-config)
@@ -192,17 +214,12 @@ With argument ARG, do this that many times."
 ;; Corrects (and improves) org-mode's native fontification.
 (doom-themes-org-config)
 
-
-
-
-
 ;; Remove crap
-(toggle-scroll-bar -1) 
-(tool-bar-mode -1)
-
-
+;; (toggle-scroll-bar -1) 
+;; (tool-bar-mode -1)
 
 #+END_SRC
+
 * Undo-Tree
 #+BEGIN_SRC emacs-lisp
 (global-undo-tree-mode)
@@ -254,8 +271,10 @@ With argument ARG, do this that many times."
 #+END_SRC
 ** Grammarly
 #+BEGIN_SRC emacs-lisp
-(require 'emacs-grammarly)
-(global-set-key (kbd "C-c C-g") 'grammarly-save-region-and-run)
+(use-package emacs-grammarly
+  :init
+  (general-define-key 
+   "C-c C-g" 'grammarly-save-region-and-run))
 #+END_SRC
 ** ESS
 #+BEGIN_SRC emacs-lisp
@@ -287,6 +306,20 @@ With argument ARG, do this that many times."
 	       '("j" "#+BEGIN_SRC julia
 ? 
 ,#+END_SRC"))
+
+  (add-to-list 'org-structure-template-alist
+	       '("la" "#+BEGIN_latex latex
+\\begin{align}
+? 
+\\end{align}
+,#+END_latex"))
+
+  (add-to-list 'org-structure-template-alist
+	       '("las" "#+BEGIN_latex latex
+\\begin{align*}
+? 
+\\end{align*}
+,#+END_latex"))
 
 ;;; display/update images in the buffer after I evaluate
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
@@ -323,6 +356,7 @@ With argument ARG, do this that many times."
     tree)
   (add-hook 'org-export-filter-parse-tree-functions
 	    'org-export-remove-prelim-headlines)
+;; Change latex image sizes 
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
 )
 
@@ -338,15 +372,21 @@ With argument ARG, do this that many times."
 #+END_SRC
 ** Julia
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "/Users/mason/julia-repl")
-(require 'julia-repl)
-(add-hook 'julia-mode-hook 'julia-repl-mode)
-;;(add-hook 'julia-mode-hook 'texfrag-mode)
-(julia-repl-set-executable "/users/mason/julia/./julia")
-(setenv "JULIA_NUM_THREADS" "4")
+(use-package julia-repl
+  :init
+  (add-hook 'julia-mode-hook 'julia-repl-mode)
+  ;;(add-hook 'julia-mode-hook 'company-mode)
+  ;;(add-hook 'julia-mode-hook 'texfrag-mode)
+  ;;(julia-repl-set-executable "/users/mason/julia/./julia")
+  (setenv "JULIA_NUM_THREADS" "4")
+  (my-leader-def
+    :keymaps 'org-mode-map
+    "s"  'julia-repl-send-region-or-line)
 
-;(require 'iterm)
-;;(add-hook 'julia-mode-hook 'iterm)
+  (my-leader-def
+    :keymaps 'julia-mode-map
+    "s"  'julia-repl-send-region-or-line))
+
 #+END_SRC
 
 ** Common Lisp
@@ -364,8 +404,45 @@ With argument ARG, do this that many times."
 #+END_SRC
 * Misc
 #+BEGIN_SRC emacs-lisp
+;; Pair braces
 (electric-pair-mode t)
+(defvar latex-electric-pairs '((\left . \right)
+			       ) "Electric pairs for latex.")
+
+(defun latex-add-electric-pairs ()
+  (setq-local electric-pair-pairs (append electric-pair-pairs latex-electric-pairs))
+  (setq-local electric-pair-text-pairs electric-pair-pairs))
+
+(remove-hook 'latex-mode-hook 'org-add-electric-pairs)
+
+
+;; Global company mode
+(add-hook 'after-init-hook 'global-company-mode)
+
+;; Set font
+;; Set default font
+(set-face-attribute 'default nil
+                    :family "Menlo"
+                    :height 130
+                    :weight 'normal
+                    :width 'normal)
+
+
+;; (add-to-list 'default-frame-alist
+;;              '(font . "DejaVu Sans Mono-13"))
+
+;; (add-to-list 'default-frame-alist
+;;              '(font . "DejaVu Sans Mono-13"))
+
+;; (use-package iterm
+;;   :init
+;;     (my-leader-def
+;;       :keymaps 'org-mode-map
+;;       "s"  'iterm-send-text)
+
+;;     (my-leader-def
+;;       :keymaps 'julia-mode-map
+;;       "s"  'iterm-send-text))
+
 #+END_SRC
-
-
 
