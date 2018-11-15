@@ -440,7 +440,7 @@ With argument ARG, do this that many times."
   ;;(add-hook 'julia-mode-hook 'company-mode)
   ;;(add-hook 'julia-mode-hook 'texfrag-mode)
   (setq julia-repl-executable-records
-   '((default "/home/mason/julia-1.0.1/bin/julia")))
+   '((default "julia")))
 
   (setq julia-repl-switches "-O3")
 
