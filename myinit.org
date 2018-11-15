@@ -7,7 +7,7 @@
 #+BEGIN_SRC emacs-lisp
 (load-library "url-handlers")
 
-(defconst home-directory "/users/mason/")
+(defconst home-directory "$HOME")
 (defconst emacs-directory (concat home-directory ".emacs.d/"))
 (defconst config-directory (concat emacs-directory "config/"))
 (defconst package-directory (concat emacs-directory "packages/"))
@@ -90,28 +90,57 @@
 #+END_SRC
 ** General
 #+BEGIN_SRC emacs-lisp
+
+(defun is-in-gui()
+  (display-graphic-p))
+(defmacro when-gui (&rest body)
+  "Works just like `progn' but will only evaluate expressions in VAR when Emacs is running in a GUI else just nil."
+  `(when (is-in-gui) ,@body))
+(defmacro when-not-gui (&rest body)
+  `(when (not (is-in-gui)) ,@body))
+
 (use-package general
   :ensure t
   :init
   (which-key-mode)
   
-  (defconst my-leader [escape])
+  ;(when-gui
+   (defconst my-leader [escape])
 
-  (general-create-definer my-leader-def
-    ;; :prefix my-leader
-    ;; or without a variable
-    :prefix [escape])
+   (general-create-definer my-leader-def
+     ;; :prefix my-leader
+     ;; or without a variable
+     :prefix [escape])
 
-  (which-key-add-key-based-replacements
-    "<escape> f" "files"
-    "<escape> fd" "dotfile"
-    "<escape> fc" "config files"
-    "<escape> <SPC>" "M-x"
-    "<escape> o" "open"
-    "<escape> m" "mode"
-    "<escape> l" "LaTeX"
-    "<escape> lp" "preview"
-    "<escape> r" "remove")
+   (which-key-add-key-based-replacements
+     "<escape> f" "files"
+     "<escape> fd" "dotfile"
+     "<escape> fc" "config files"
+     "<escape> <SPC>" "M-x"
+     "<escape> o" "open"
+     "<escape> m" "mode"
+     "<escape> l" "LaTeX"
+     "<escape> lp" "preview"
+     "<escape> r" "remove");)
+
+  ;; (when-not-gui
+  ;;  (defconst my-leader "M-ĝ")
+
+  ;;  (general-create-definer my-leader-def
+  ;;    ;; :prefix my-leader
+  ;;    ;; or without a variable
+  ;;    :prefix "M-ĝ")
+
+  ;;  (which-key-add-key-based-replacements
+  ;;    "M-ĝ f" "files"
+  ;;    "M-ĝ fd" "dotfile"
+  ;;    "M-ĝ fc" "config files"
+  ;;    "M-ĝ <SPC>" "M-x"
+  ;;    "M-ĝ o" "open"
+  ;;    "M-ĝ m" "mode"
+  ;;    "M-ĝ l" "select-line"
+  ;;    "M-ĝ lp" "preview"
+  ;;    "M-ĝ r" "remove"))
 
   (defun select-current-line ()
     "Select the current line"
@@ -194,6 +223,28 @@ With argument ARG, do this that many times."
 
 
 
+(defvar personal/fast-keyseq-timeout 200)
+
+(defun personal/-tty-ESC-filter (map)
+  (if (and (equal (this-single-command-keys) [?\e])
+           (sit-for (/ personal/fast-keyseq-timeout 1000.0)))
+      [escape] map))
+
+(defun personal/-lookup-key (map key)
+  (catch 'found
+    (map-keymap (lambda (k b) (if (equal key k) (throw 'found b))) map)))
+
+(defun personal/catch-tty-ESC ()
+  "Setup key mappings of current terminal to turn a tty's ESC into `escape'."
+  (when (memq (terminal-live-p (frame-terminal)) '(t pc))
+    (let ((esc-binding (personal/-lookup-key input-decode-map ?\e)))
+      (define-key input-decode-map
+        [?\e] `(menu-item "" ,esc-binding :filter personal/-tty-ESC-filter)))))
+
+(personal/catch-tty-ESC)
+
+
+
 #+END_SRC
 
  Make it so that selected text gets deleted if I start typing
@@ -211,6 +262,7 @@ With argument ARG, do this that many times."
    "C-x C-f" #'helm-find-files
    "M-y" 'helm-show-kill-ring)
   (helm-mode 1))
+
 
 
 #+END_SRC
@@ -301,10 +353,10 @@ With argument ARG, do this that many times."
 #+END_SRC
 ** Grammarly
 #+BEGIN_SRC emacs-lisp
-(use-package emacs-grammarly
-  :init
-  (general-define-key 
-   "C-c C-g" 'grammarly-save-region-and-run))
+;(use-package emacs-grammarly
+;  :init
+;  (general-define-key 
+;   "C-c C-g" 'grammarly-save-region-and-run))
 #+END_SRC
 ** ESS
 #+BEGIN_SRC emacs-lisp
@@ -408,7 +460,7 @@ With argument ARG, do this that many times."
   ;;(add-hook 'julia-mode-hook 'company-mode)
   ;;(add-hook 'julia-mode-hook 'texfrag-mode)
   (setq julia-repl-executable-records
-   '((default "/users/mason/julia/./julia")))
+   '((default "/home/mason/julia-1.0.1/bin/julia")))
 
   (setq julia-repl-switches "-O3")
 
