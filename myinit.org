@@ -7,6 +7,8 @@
 #+BEGIN_SRC emacs-lisp
 (load-library "url-handlers")
 
+(setq backup-directory-alist '(("." . "~/.emacs-saves")))
+
 (defconst home-directory "$HOME")
 (defconst emacs-directory (concat home-directory ".emacs.d/"))
 (defconst config-directory (concat emacs-directory "config/"))
