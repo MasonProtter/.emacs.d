@@ -104,7 +104,6 @@
   :init
   (which-key-mode)
   
-  ;(when-gui
    (defconst my-leader [escape])
 
    (general-create-definer my-leader-def
@@ -121,26 +120,7 @@
      "<escape> m" "mode"
      "<escape> l" "LaTeX"
      "<escape> lp" "preview"
-     "<escape> r" "remove");)
-
-  ;; (when-not-gui
-  ;;  (defconst my-leader "M-ĝ")
-
-  ;;  (general-create-definer my-leader-def
-  ;;    ;; :prefix my-leader
-  ;;    ;; or without a variable
-  ;;    :prefix "M-ĝ")
-
-  ;;  (which-key-add-key-based-replacements
-  ;;    "M-ĝ f" "files"
-  ;;    "M-ĝ fd" "dotfile"
-  ;;    "M-ĝ fc" "config files"
-  ;;    "M-ĝ <SPC>" "M-x"
-  ;;    "M-ĝ o" "open"
-  ;;    "M-ĝ m" "mode"
-  ;;    "M-ĝ l" "select-line"
-  ;;    "M-ĝ lp" "preview"
-  ;;    "M-ĝ r" "remove"))
+     "<escape> r" "remove")
 
   (defun select-current-line ()
     "Select the current line"
@@ -222,7 +202,7 @@ With argument ARG, do this that many times."
 (setq mac-option-modifier 'meta)
 
 
-
+(when-not-gui
 (defvar personal/fast-keyseq-timeout 200)
 
 (defun personal/-tty-ESC-filter (map)
@@ -241,7 +221,7 @@ With argument ARG, do this that many times."
       (define-key input-decode-map
         [?\e] `(menu-item "" ,esc-binding :filter personal/-tty-ESC-filter)))))
 
-(personal/catch-tty-ESC)
+(personal/catch-tty-ESC))
 
 
 
