@@ -1,10 +1,5 @@
-#+STARTUP: overview
-* Repos
-#+BEGIN_SRC emacs-lisp
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-#+END_SRC
-* Paths
-#+BEGIN_SRC emacs-lisp
+
 (load-library "url-handlers")
 
 (setq backup-directory-alist '(("." . "~/.emacs-saves")))
@@ -30,68 +25,6 @@
 ;; (add-to-list 'load-path "~/.emacs.d/packages/ob-julia")
 ;; (add-to-list 'load-path "~/.emacs.d/packages/")
 ;; (add-to-list 'load-path "/Users/mason/julia-repl")
-
-
-#+END_SRC
-* Key Config
-** COMMENT Evil
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/.emacs.d/evil") ;
-  (require 'evil)
-  (evil-mode 1)
-#+END_SRC
-
-** COMMENT Evil-Leader
-#+BEGIN_SRC emacs-lisp
-(require 'evil-leader)
-(global-evil-leader-mode)
-(which-key-mode)
-
-
-(evil-leader/set-leader "<SPC>")
-(which-key-add-key-based-replacements
-  "<SPC>f" "files"
-  "<SPC>fd" "dotfile"
-  "<SPC>fc" "config files"
-  "<SPC><SPC>" "M-x"
-  "<SPC>o" "open"
-  "<SPC>m" "mode"
-  "<SPC>l" "LaTeX"
-  "<SPC>lp" "preview")
-
-(evil-leader/set-key
-  "<SPC>" 'helm-M-x
-  "ff" 'helm-find-files
-  "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
-  "fc" '(lambda () (interactive) (find-file config-directory))
-  "s" 'save-buffer
-  "oe" 'eshell
-  "os" 'shell
-  "ot" 'term
-  "b"  'switch-to-buffer)
-
-(evil-leader/set-key-for-mode 'latex-mode
-  "mc" 'TeX-command-master
-  "mv" 'TeX-view
-  "mpb" 'preview-buffer
-  "mpr" 'preview-region
-  "mps" 'preview-section
-  "mpe" 'preview-environment
-  "mpd" 'preview-document
-  "me"  'LaTeX-environment)
-
-(evil-leader/set-key-for-mode 'julia-mode
-  "mc" 'julia-repl-send-region-or-line
-  "md" 'julia-repl-doc)
-
-
-(global-set-key (kbd "s-c") 'kill-ring-save)
-(global-set-key (kbd "s-x") 'kill-region)
-(global-set-key (kbd "s-v") 'yank)
-(global-set-key (kbd "s-b") 'yank-pop)
-#+END_SRC
-** General
-#+BEGIN_SRC emacs-lisp
 
 (defun is-in-gui()
   (display-graphic-p))
@@ -174,23 +107,15 @@
     :keymaps 'org-mode-map
     "q" 'org-fill-paragraph))
 
-#+END_SRC
-** Region Wrap
-#+BEGIN_SRC emacs-lisp
 (use-package wrap-region
   :init
   (wrap-region-global-mode t))
-#+END_SRC
-** Multiple-Cursors
-#+BEGIN_SRC emacs-lisp
+
 (use-package multiple-cursors
   :init
   (general-define-key
    "C-M-<mouse-1>" 'mc/add-cursor-on-click))
-#+END_SRC
-** Misc.
-Don't add C-<backspace>'d words to kill ring
-#+BEGIN_SRC emacs-lisp
+
 (defun backward-delete-word (arg)
     "Delete characters backward until encountering the beginning of a word.
 With argument ARG, do this that many times."
@@ -225,17 +150,8 @@ With argument ARG, do this that many times."
 
 (personal/catch-tty-ESC))
 
-
-
-#+END_SRC
-
- Make it so that selected text gets deleted if I start typing
-#+BEGIN_SRC emacs-lisp
 (delete-selection-mode 1)
-#+END_SRC
 
-* Helm
-#+BEGIN_SRC emacs-lisp
 (use-package helm-config
   :init
   (general-define-key 
@@ -245,12 +161,6 @@ With argument ARG, do this that many times."
    "M-y" 'helm-show-kill-ring)
   (helm-mode 1))
 
-
-
-#+END_SRC
-
-* Doom-Theme
-#+BEGIN_SRC emacs-lisp
 ;; Global settings (defaults)
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic t) ; if nil, italics is universally disabled
@@ -280,22 +190,10 @@ With argument ARG, do this that many times."
  (toggle-scroll-bar -1) 
  (tool-bar-mode -1))
 
-
-
-#+END_SRC
-
-* Undo-Tree
-#+BEGIN_SRC emacs-lisp
 (global-undo-tree-mode)
-#+END_SRC
 
-* Applications
-** Prog modes
-#+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-#+END_SRC
-** TeX
-#+BEGIN_SRC emacs-lisp
+
 (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
 
 
@@ -332,21 +230,14 @@ With argument ARG, do this that many times."
        TeX-source-correlate-start-server t)
 (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
-#+END_SRC
-** Grammarly
-#+BEGIN_SRC emacs-lisp
 ;(use-package emacs-grammarly
 ;  :init
 ;  (general-define-key 
 ;   "C-c C-g" 'grammarly-save-region-and-run))
-#+END_SRC
-** ESS
-#+BEGIN_SRC emacs-lisp
+
 ;; (require 'ess-site)
 ;; (setq  inferior-julia-program-name "~/julia/./julia")
-#+END_SRC
-** Org 
-#+BEGIN_SRC emacs-lisp
+
 (with-eval-after-load "org"
 
   (setq org-src-fontify-natively t
@@ -369,21 +260,21 @@ With argument ARG, do this that many times."
   (add-to-list 'org-structure-template-alist
 	       '("j" "#+BEGIN_SRC julia
 ? 
-,#+END_SRC"))
+#+END_SRC"))
 
   (add-to-list 'org-structure-template-alist
 	       '("la" "#+BEGIN_latex latex
 \\begin{align}
 ? 
 \\end{align}
-,#+END_latex"))
+#+END_latex"))
 
   (add-to-list 'org-structure-template-alist
 	       '("las" "#+BEGIN_latex latex
 \\begin{align*}
 ? 
 \\end{align*}
-,#+END_latex"))
+#+END_latex"))
 
 ;;; display/update images in the buffer after I evaluate
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
@@ -424,24 +315,17 @@ With argument ARG, do this that many times."
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
 )
 
-#+END_SRC
-** HTMLize
-#+BEGIN_SRC emacs-lisp
 (use-package htmlize
   :ensure t
   :defer t)
-#+END_SRC
-** Eshell
-#+BEGIN_SRC emacs-lisp
+
 ;; (setq eshell-cmpl-cycle-completions nil)
 ;; (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point) 
 (add-hook 'eshell-mode-hook
           (lambda () 
             (define-key eshell-mode-map (kbd "<tab>")
               (lambda () (interactive) (pcomplete-std-complete)))))
-#+END_SRC
-** Julia
-#+BEGIN_SRC emacs-lisp
+
 (use-package julia-repl
   :ensure t
   :defer t
@@ -463,33 +347,21 @@ With argument ARG, do this that many times."
     :keymaps 'julia-mode-map
     "s"  'julia-repl-send-region-or-line))
 
-#+END_SRC
-
-** Common Lisp
-#+BEGIN_SRC emacs-lisp
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
 (slime-setup '(slime-fancy))
 
-#+END_SRC
-** EIN
-#+BEGIN_SRC emacs-lisp
 ;; (require 'ein)
 ;; (require 'ein-loaddefs)
 ;; (require 'ein-notebook)
 ;; (require 'ein-subpackages)
-#+END_SRC
-** TRAMP
-#+BEGIN_SRC emacs-lisp
+
 (setq password-cache-expiry nil)
 
 (defun cedar-shell ()
     (interactive)
     (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
       (shell)))
-#+END_SRC
 
-* Language Server Protocol
-#+BEGIN_SRC emacs-lisp
 ;; (use-package lsp-mode
 ;;    :ensure t
 ;;    :config
@@ -518,10 +390,6 @@ With argument ARG, do this that many times."
 ;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 ;; (add-hook 'julia-mode-hook 'flycheck-mode)
 
-
-#+END_SRC
-* Misc
-#+BEGIN_SRC emacs-lisp
 ;; Pair braces
 (electric-pair-mode t)
 (defvar latex-electric-pairs '((\left . \right)
@@ -564,6 +432,3 @@ With argument ARG, do this that many times."
 
 ; ⠍
 ; ⠁
-
-#+END_SRC
-
