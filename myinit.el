@@ -312,7 +312,7 @@ With argument ARG, do this that many times."
   (add-hook 'org-export-filter-parse-tree-functions
 	    'org-export-remove-prelim-headlines)
 ;; Change latex image sizes 
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.25))
 )
 
 (use-package htmlize
@@ -334,7 +334,8 @@ With argument ARG, do this that many times."
   ;;(add-hook 'julia-mode-hook 'company-mode)
   ;;(add-hook 'julia-mode-hook 'texfrag-mode)
   (setq julia-repl-executable-records
-   '((default "julia")))
+   '((default "~/julia/./julia")
+     (default "~/julia/./julia")))
 
   (setq julia-repl-switches "-O3")
 
@@ -361,6 +362,22 @@ With argument ARG, do this that many times."
     (interactive)
     (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
       (shell)))
+
+(use-package company-tabnine :ensure t)
+(add-to-list 'company-backends #'company-tabnine)
+;; Trigger completion immediately.
+(setq company-idle-delay 0)
+
+;; Number the candidates (use M-1, M-2 etc to select completions).
+(setq company-show-numbers t)
+
+;; Use the tab-and-go frontend.
+;; Allows TAB to select and complete at the same time.
+(company-tng-configure-default)
+(setq company-frontends
+      '(company-tng-frontend
+        company-pseudo-tooltip-frontend
+        company-echo-metadata-frontend))
 
 ;; (use-package lsp-mode
 ;;    :ensure t

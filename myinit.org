@@ -1,4 +1,5 @@
 #+STARTUP: overview
+
 * Repos
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -421,7 +422,7 @@ With argument ARG, do this that many times."
   (add-hook 'org-export-filter-parse-tree-functions
 	    'org-export-remove-prelim-headlines)
 ;; Change latex image sizes 
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.25))
 )
 
 #+END_SRC
@@ -450,7 +451,8 @@ With argument ARG, do this that many times."
   ;;(add-hook 'julia-mode-hook 'company-mode)
   ;;(add-hook 'julia-mode-hook 'texfrag-mode)
   (setq julia-repl-executable-records
-   '((default "julia")))
+   '((default "~/julia/./julia")
+     (default "~/julia/./julia")))
 
   (setq julia-repl-switches "-O3")
 
@@ -488,6 +490,28 @@ With argument ARG, do this that many times."
       (shell)))
 #+END_SRC
 
+** TabNine
+#+BEGIN_SRC emacs-lisp
+(use-package company-tabnine :ensure t)
+(add-to-list 'company-backends #'company-tabnine)
+;; Trigger completion immediately.
+(setq company-idle-delay 0)
+
+;; Number the candidates (use M-1, M-2 etc to select completions).
+(setq company-show-numbers t)
+
+;; Use the tab-and-go frontend.
+;; Allows TAB to select and complete at the same time.
+(company-tng-configure-default)
+(setq company-frontends
+      '(company-tng-frontend
+        company-pseudo-tooltip-frontend
+        company-echo-metadata-frontend))
+
+
+
+
+#+END_SRC
 * Language Server Protocol
 #+BEGIN_SRC emacs-lisp
 ;; (use-package lsp-mode
