@@ -16,11 +16,11 @@
 (defconst package-directory (concat emacs-directory "packages/"))
 
 (add-to-list 'load-path (concat package-directory ""))
-(add-to-list 'load-path (concat package-directory "evil-leader"))
-(add-to-list 'load-path (concat package-directory "evil"))
-(add-to-list 'load-path (concat package-directory "emacs-grammarly"))
-(add-to-list 'load-path (concat package-directory "julia-repl"))
-(add-to-list 'load-path (concat package-directory "lsp-julia"))
+;; (add-to-list 'load-path (concat package-directory "evil-leader"))
+;; (add-to-list 'load-path (concat package-directory "evil"))
+;; (add-to-list 'load-path (concat package-directory "emacs-grammarly"))
+;; (add-to-list 'load-path (concat package-directory "julia-repl"))
+;; (add-to-list 'load-path (concat package-directory "lsp-julia"))
 ;; (add-to-list 'load-path (concat package-directory "ob-julia"))
 ;; (add-to-list 'load-path (concat package-directory "ESS/lisp"))
 
@@ -35,62 +35,6 @@
 
 #+END_SRC
 * Key Config
-** COMMENT Evil
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/.emacs.d/evil") ;
-  (require 'evil)
-  (evil-mode 1)
-#+END_SRC
-
-** COMMENT Evil-Leader
-#+BEGIN_SRC emacs-lisp
-(require 'evil-leader)
-(global-evil-leader-mode)
-(which-key-mode)
-
-
-(evil-leader/set-leader "<SPC>")
-(which-key-add-key-based-replacements
-  "<SPC>f" "files"
-  "<SPC>fd" "dotfile"
-  "<SPC>fc" "config files"
-  "<SPC><SPC>" "M-x"
-  "<SPC>o" "open"
-  "<SPC>m" "mode"
-  "<SPC>l" "LaTeX"
-  "<SPC>lp" "preview")
-
-(evil-leader/set-key
-  "<SPC>" 'helm-M-x
-  "ff" 'helm-find-files
-  "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
-  "fc" '(lambda () (interactive) (find-file config-directory))
-  "s" 'save-buffer
-  "oe" 'eshell
-  "os" 'shell
-  "ot" 'term
-  "b"  'switch-to-buffer)
-
-(evil-leader/set-key-for-mode 'latex-mode
-  "mc" 'TeX-command-master
-  "mv" 'TeX-view
-  "mpb" 'preview-buffer
-  "mpr" 'preview-region
-  "mps" 'preview-section
-  "mpe" 'preview-environment
-  "mpd" 'preview-document
-  "me"  'LaTeX-environment)
-
-(evil-leader/set-key-for-mode 'julia-mode
-  "mc" 'julia-repl-send-region-or-line
-  "md" 'julia-repl-doc)
-
-
-(global-set-key (kbd "s-c") 'kill-ring-save)
-(global-set-key (kbd "s-x") 'kill-region)
-(global-set-key (kbd "s-v") 'yank)
-(global-set-key (kbd "s-b") 'yank-pop)
-#+END_SRC
 ** General
 #+BEGIN_SRC emacs-lisp
 
