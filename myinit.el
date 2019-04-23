@@ -229,14 +229,18 @@ With argument ARG, do this that many times."
   (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
 ;; (add-to-list 'load-path "~/emacs-jupyter")
-(require 'jupyter)
-(require 'jupyter-python)
-(require 'jupyter-julia)
+(use-package popup
+  :ensure t)
+(use-package jupyter
+  :ensure t
+  :defer t
+  :config
+  (require 'jupyter-python)
+  (require 'jupyter-julia)
+  (setq jupyter-eval-short-result-display-function 'popup-tip)
+  (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
 ;; (setq jupyter-runtime-dir (shell-command-to-string "jupyter --runtime-dir"))
-
-(require 'popup)
-(setq jupyter-eval-short-result-display-function 'popup-tip)
 
 ;; (defvar orig-message (symbol-function 'message))
 
@@ -334,7 +338,7 @@ With argument ARG, do this that many times."
   (add-hook 'org-export-filter-parse-tree-functions
 	    'org-export-remove-prelim-headlines)
   ;; Change latex image sizes 
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
 
 
   (defun my/org-mode-hook ()
@@ -424,10 +428,13 @@ With argument ARG, do this that many times."
 
   ;; Set font
   ;; Set default font
-  (set-face-attribute 'default nil
-		      :family "SF Mono"
-		      :height 130
-		      :weight 'normal
-		      :width 'normal)
+  ;; (set-face-attribute 'default nil
+  ;; 		      :family "SF Mono"
+  ;; 		      :height 130
+  ;; 		      :weight 'normal
+  ;; 		      :width 'normal)
 
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
+
+(set-face-attribute 
+ 'default t :family "Ubuntu Mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
