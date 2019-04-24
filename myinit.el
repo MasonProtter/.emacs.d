@@ -233,31 +233,15 @@ With argument ARG, do this that many times."
   :ensure t)
 (use-package jupyter
   :ensure t
-  :defer t
   :config
   (require 'jupyter-python)
   (require 'jupyter-julia)
   (setq jupyter-eval-short-result-display-function 'popup-tip)
   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
-;; (setq jupyter-runtime-dir (shell-command-to-string "jupyter --runtime-dir"))
 
-;; (defvar orig-message (symbol-function 'message))
-
-;; (defun message-to-popup-tip (format-string &rest args)
-;;   (popup-tip (apply 'format format-string args)))
-
-;; (defmacro with-messages-to-popup-tip (&rest body)
-;;   `(progn (fset 'message (symbol-function 'message-to-popup-tip))
-;;           (unwind-protect
-;;               (progn ,@body)
-;;             (fset 'message orig-message))))
-
-;; (defun jupyter--display-eval-result-popup (orig msg)
-;;   (with-messages-to-popup-tip
-;;    (funcall orig msg)))
-
-;; (advice-add 'jupyter--display-eval-result :around #'jupyter--display-eval-result-popup)
+(require 'jupyter)
+(require 'jupyter-julia)
 
 (with-eval-after-load "org"
 
@@ -272,7 +256,7 @@ With argument ARG, do this that many times."
    '((emacs-lisp . t)
      (python . t)
      (jupyter . t)))
-  ;;(setq ob-ipython-resources-dir "/Users/mason/Documents/ob_ipython_resources/")
+
   (setq org-confirm-babel-evaluate nil)
   (add-to-list 'org-structure-template-alist
 	       '("j" "#+BEGIN_SRC julia
@@ -410,29 +394,30 @@ With argument ARG, do this that many times."
 ;; 	company-pseudo-tooltip-frontend
 ;; 	company-echo-metadata-frontend))
 
+(menu-bar-mode -1)
 (electric-pair-mode t)
-  (defvar latex-electric-pairs 
-    '((\left . \right)
-      ) "Electric pairs for latex.")
+(defvar latex-electric-pairs 
+  '((\left . \right)
+    ) "Electric pairs for latex.")
 
-  (defun latex-add-electric-pairs ()
-    (setq-local electric-pair-pairs 
-		(append electric-pair-pairs latex-electric-pairs))
-    (setq-local electric-pair-text-pairs electric-pair-pairs))
+(defun latex-add-electric-pairs ()
+  (setq-local electric-pair-pairs 
+	      (append electric-pair-pairs latex-electric-pairs))
+  (setq-local electric-pair-text-pairs electric-pair-pairs))
 
-  (remove-hook 'latex-mode-hook 'org-add-electric-pairs)
+(remove-hook 'latex-mode-hook 'org-add-electric-pairs)
 
 
-  ;; Global company mode
-  (add-hook 'after-init-hook 'global-company-mode)
+;; Global company mode
+(add-hook 'after-init-hook 'global-company-mode)
 
-  ;; Set font
-  ;; Set default font
-  ;; (set-face-attribute 'default nil
-  ;; 		      :family "SF Mono"
-  ;; 		      :height 130
-  ;; 		      :weight 'normal
-  ;; 		      :width 'normal)
+;; Set font
+;; Set default font
+;; (set-face-attribute 'default nil
+;; 		      :family "SF Mono"
+;; 		      :height 130
+;; 		      :weight 'normal
+;; 		      :width 'normal)
 
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
