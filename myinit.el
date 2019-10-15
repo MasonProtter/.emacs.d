@@ -1,4 +1,4 @@
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 
 ;; (load-library "url-handlers")
 
@@ -99,7 +99,8 @@
 
   (my-leader-def
     :keymaps 'org-mode-map
-    "q" 'org-fill-paragraph))
+    "q" 'org-fill-paragraph
+    "cc" 'julia-repl-send-region-or-line))
 
 (use-package wrap-region
   :init
@@ -166,19 +167,14 @@ With argument ARG, do this that many times."
 
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic t) ; if nil, italics is universally disabled
-
-
 (load-theme 'doom-one t)
-
 (doom-themes-visual-bell-config)
-
 (doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
-
 (doom-themes-org-config)
 
 
 (defun is-in-gui()
-    (display-graphic-p))
+  (display-graphic-p))
 (defmacro when-gui (&rest body)
   "Works just like `progn' but will only evaluate expressions in VAR when Emacs is running in a GUI else just nil."
   `(when (is-in-gui) ,@body))
@@ -193,11 +189,14 @@ With argument ARG, do this that many times."
 
 (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
 
+(use-package reftex
+  :ensure t)
 
 (use-package tex-site
   :ensure auctex
   :mode ("\\.tex\\'" . latex-mode)
   :config
+  (setq reftex-plug-into-AUCTeX t)
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
   (setq-default TeX-master nil)
@@ -227,6 +226,10 @@ With argument ARG, do this that many times."
   (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
 	TeX-source-correlate-start-server t)
   (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
+
+(use-package company-auctex
+  :ensure t)
+(company-auctex-init)
 
 ;; (add-to-list 'load-path "~/emacs-jupyter")
 (use-package popup
@@ -284,7 +287,7 @@ With argument ARG, do this that many times."
 
   (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
                                                       (:session . "jl")
-                                                      (:kernel . "julia-1.1")
+                                                      (:kernel . "julia-1.3")
 						      (:exports . "both")))
 
   ;;; display/update images in the buffer after I evaluate
@@ -321,8 +324,9 @@ With argument ARG, do this that many times."
 
   (add-hook 'org-export-filter-parse-tree-functions
 	    'org-export-remove-prelim-headlines)
+
   ;; Change latex image sizes 
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
 
 
   (defun my/org-mode-hook ()
@@ -372,9 +376,9 @@ With argument ARG, do this that many times."
 (setq password-cache-expiry nil)
 
 (defun cedar-shell ()
-    (interactive)
-    (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
-      (shell)))
+  (interactive)
+  (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
+    (shell)))
 
 (require 'tramp-sh nil t)
 
@@ -394,11 +398,12 @@ With argument ARG, do this that many times."
 ;; 	company-pseudo-tooltip-frontend
 ;; 	company-echo-metadata-frontend))
 
-(menu-bar-mode -1)
+(setq ispell-program-name "/usr/local/bin/aspell")
+
+(menu-bar-mode 1)
 (electric-pair-mode t)
 (defvar latex-electric-pairs 
-  '((\left . \right)
-    ) "Electric pairs for latex.")
+  '((\left . \right)) "Electric pairs for latex.")
 
 (defun latex-add-electric-pairs ()
   (setq-local electric-pair-pairs 
@@ -422,4 +427,6 @@ With argument ARG, do this that many times."
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
 (set-face-attribute 
- 'default t :family "Ubuntu Mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
+ 'default t :family "DejaVu mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
+
+(set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "DejaVu Sans")

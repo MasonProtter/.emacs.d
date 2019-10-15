@@ -2,7 +2,7 @@
 
 * Repos
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+ ;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 #+END_SRC
 * Paths
 #+BEGIN_SRC emacs-lisp
@@ -111,7 +111,8 @@
 
     (my-leader-def
       :keymaps 'org-mode-map
-      "q" 'org-fill-paragraph))
+      "q" 'org-fill-paragraph
+      "cc" 'julia-repl-send-region-or-line))
 
 #+END_SRC
 ** Region Wrap
@@ -205,85 +206,83 @@ Don't add C-<backspace>'d words to kill ring
 * Doom-Theme
 #+BEGIN_SRC emacs-lisp
 
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-	doom-themes-enable-italic t) ; if nil, italics is universally disabled
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+(load-theme 'doom-one t)
+(doom-themes-visual-bell-config)
+(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+(doom-themes-org-config)
 
 
-  (load-theme 'doom-one t)
+(defun is-in-gui()
+  (display-graphic-p))
+(defmacro when-gui (&rest body)
+  "Works just like `progn' but will only evaluate expressions in VAR when Emacs is running in a GUI else just nil."
+  `(when (is-in-gui) ,@body))
 
-  (doom-themes-visual-bell-config)
-
-  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
-
-  (doom-themes-org-config)
-
-
-  (defun is-in-gui()
-      (display-graphic-p))
-  (defmacro when-gui (&rest body)
-    "Works just like `progn' but will only evaluate expressions in VAR when Emacs is running in a GUI else just nil."
-    `(when (is-in-gui) ,@body))
-
-  (when-gui
-   (toggle-scroll-bar -1) 
-   (tool-bar-mode -1))
+(when-gui
+ (toggle-scroll-bar -1) 
+ (tool-bar-mode -1))
 
 
 #+END_SRC
 
 * Undo-Tree
 #+BEGIN_SRC emacs-lisp
-
-  (global-undo-tree-mode)
-
+(global-undo-tree-mode)
 #+END_SRC
 
 * Applications
 ** Prog modes
 #+BEGIN_SRC emacs-lisp
-
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
 ** TeX
 #+BEGIN_SRC emacs-lisp
 
-  (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
+(setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
 
+(use-package reftex
+  :ensure t)
 
-  (use-package tex-site
-    :ensure auctex
-    :mode ("\\.tex\\'" . latex-mode)
-    :config
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master nil)
-    (add-hook 
-     'LaTeX-mode-hook
-     (lambda ()
-       (company-mode)
-       (setq TeX-auto-save t)
-       (setq TeX-parse-self t)
-       (setq TeX-save-query nil)
-       (setq TeX-PDF-mode t)
-       (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
-       ;; (setq TeX-view-program-list
-       ;; 	   '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-       (setq  TeX-view-evince-keep-focus nil)))
+(use-package tex-site
+  :ensure auctex
+  :mode ("\\.tex\\'" . latex-mode)
+  :config
+  (setq reftex-plug-into-AUCTeX t)
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil)
+  (add-hook 
+   'LaTeX-mode-hook
+   (lambda ()
+     (company-mode)
+     (setq TeX-auto-save t)
+     (setq TeX-parse-self t)
+     (setq TeX-save-query nil)
+     (setq TeX-PDF-mode t)
+     (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+     ;; (setq TeX-view-program-list
+     ;; 	   '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+     (setq  TeX-view-evince-keep-focus nil)))
 
-    ;; Update PDF buffers after successful LaTeX runs
-    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
-	      #'TeX-revert-document-buffer)
+  ;; Update PDF buffers after successful LaTeX runs
+  (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+	    #'TeX-revert-document-buffer)
 
-    (add-hook 'TeX-after-compilation-finished-functions
-	      #'TeX-revert-document-buffer)
-    ;; to use pdfview with auctex
-    (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
+  (add-hook 'TeX-after-compilation-finished-functions
+	    #'TeX-revert-document-buffer)
+  ;; to use pdfview with auctex
+  (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
 
-    ;; to use pdfview with auctex
-    (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
-	  TeX-source-correlate-start-server t)
-    (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
+  ;; to use pdfview with auctex
+  (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
+	TeX-source-correlate-start-server t)
+  (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
+
+(use-package company-auctex
+  :ensure t)
+(company-auctex-init)
 
 #+END_SRC
 ** emacs-jupyter
@@ -348,7 +347,7 @@ Don't add C-<backspace>'d words to kill ring
 
   (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
                                                       (:session . "jl")
-                                                      (:kernel . "julia-1.1")
+                                                      (:kernel . "julia-1.3")
 						      (:exports . "both")))
 
   ;;; display/update images in the buffer after I evaluate
@@ -385,8 +384,9 @@ Don't add C-<backspace>'d words to kill ring
 
   (add-hook 'org-export-filter-parse-tree-functions
 	    'org-export-remove-prelim-headlines)
+
   ;; Change latex image sizes 
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.75))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
 
 
   (defun my/org-mode-hook ()
@@ -446,22 +446,20 @@ Don't add C-<backspace>'d words to kill ring
 
 ** Common Lisp
 #+BEGIN_SRC emacs-lisp
-
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
 (slime-setup '(slime-fancy))
-
 #+END_SRC
 ** TRAMP
 #+BEGIN_SRC emacs-lisp
 
-  (setq password-cache-expiry nil)
+(setq password-cache-expiry nil)
 
-  (defun cedar-shell ()
-      (interactive)
-      (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
-	(shell)))
+(defun cedar-shell ()
+  (interactive)
+  (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
+    (shell)))
 
-  (require 'tramp-sh nil t)
+(require 'tramp-sh nil t)
 
 #+END_SRC
 ** TabNine
@@ -487,13 +485,16 @@ Don't add C-<backspace>'d words to kill ring
 
 
 #+END_SRC
+** Flyspell
+#+BEGIN_SRC emacs-lisp
+(setq ispell-program-name "/usr/local/bin/aspell")
+#+END_SRC
 * Misc
 #+BEGIN_SRC emacs-lisp
-(menu-bar-mode -1)
+(menu-bar-mode 1)
 (electric-pair-mode t)
 (defvar latex-electric-pairs 
-  '((\left . \right)
-    ) "Electric pairs for latex.")
+  '((\left . \right)) "Electric pairs for latex.")
 
 (defun latex-add-electric-pairs ()
   (setq-local electric-pair-pairs 
@@ -517,7 +518,9 @@ Don't add C-<backspace>'d words to kill ring
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
 (set-face-attribute 
- 'default t :family "Ubuntu Mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
+ 'default t :family "DejaVu mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
+
+(set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "DejaVu Sans")
 
 #+END_SRC
 
