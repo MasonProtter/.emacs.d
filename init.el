@@ -1,11 +1,5 @@
 (require 'package)
 (setq package-enable-at-startup nil)
-;; (add-to-list 'package-archives
-;; 	     '("melpa" . "https://melpa.org/packages/"))
-;; (add-to-list 'package-archives
-;; 	     '("melpa2" . "http://www.mirrorservice.org/sites/melpa.org/packages/"))
-;; (add-to-list 'package-archives
-;; 	     '("melpa-stable" . "http://www.mirrorservice.org/sites/stable.melpa.org/packages/"))
 
 (setq package-archives
       '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
@@ -26,19 +20,6 @@
 (eval-when-compile
   (require 'use-package))
 
-;; (setq package-archives
-;;       '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
-;;         ("MELPA Stable" . "https://stable.melpa.org/packages/")
-;;         ("MELPA"        . "https://melpa.org/packages/"))
-;;       package-archive-priorities
-;;       '(("MELPA Stable" . 10)
-;;         ("GNU ELPA"     . 5)
-;;         ("MELPA"        . 0)))
-
-;; (setq package-archive-priorities
-;;       '(("melpa-stable" . 20)
-;;         ("gnu" . 10)
-;;         ("melpa" . 0)))
 
 
 (org-babel-load-file (expand-file-name "~/.emacs.d/myinit.org"))
