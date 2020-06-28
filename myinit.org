@@ -1,5 +1,7 @@
 #+STARTUP: overview
 
+
+
 * Repos
 #+BEGIN_SRC emacs-lisp
  ;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -31,9 +33,11 @@
   ;; (add-to-list 'load-path "~/.emacs.d/packages/ob-julia")
   ;; (add-to-list 'load-path "~/.emacs.d/packages/")
   ;; (add-to-list 'load-path "/Users/mason/julia-repl")
+
+
+
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
-
 #+END_SRC
 * Key Config
 ** General
@@ -183,6 +187,7 @@ Don't add C-<backspace>'d words to kill ring
 
 #+END_SRC
  Make it so that selected text gets deleted if I start typing
+
 #+BEGIN_SRC emacs-lisp
 
   (delete-selection-mode 1)
@@ -192,14 +197,14 @@ Don't add C-<backspace>'d words to kill ring
 * Helm
 #+BEGIN_SRC emacs-lisp
 
-  (use-package helm-config
-    :init
-    (general-define-key 
-     "M-x" #'helm-M-x
-     "C-x r b" #'helm-filtered-bookmarks
-     "C-x C-f" #'helm-find-files
-     "M-y" 'helm-show-kill-ring)
-    (helm-mode 1))
+(use-package helm-config
+  :init
+  (general-define-key 
+   "M-x" #'helm-M-x
+   "C-x r b" #'helm-filtered-bookmarks
+   "C-x C-f" #'helm-find-files
+   "M-y" 'helm-show-kill-ring)
+  (helm-mode 1))
 
 
 #+END_SRC
@@ -233,14 +238,32 @@ Don't add C-<backspace>'d words to kill ring
 #+END_SRC
 
 * Applications
+** AutoUpdate
+#+BEGIN_SRC emacs-lisp
+;; (use-package auto-package-update
+;;   :ensure t
+;;   :config
+;;   (setq auto-package-update-delete-old-versions t)
+;;   (setq auto-package-update-hide-results t)
+;;   (auto-package-update-maybe))
+#+END_SRC
+
+** Magit
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+   :ensure t)
+;; (require 'magit)
+#+END_SRC
+
 ** Prog modes
 #+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
+
 ** TeX
 #+BEGIN_SRC emacs-lisp
 
-(setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
+;; (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
 
 (use-package reftex
   :ensure t)
@@ -249,6 +272,7 @@ Don't add C-<backspace>'d words to kill ring
   :ensure auctex
   :mode ("\\.tex\\'" . latex-mode)
   :config
+  (custom-set-variables '(LaTeX-command "latex -synctex=1"))
   (setq reftex-plug-into-AUCTeX t)
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
@@ -280,9 +304,9 @@ Don't add C-<backspace>'d words to kill ring
 	TeX-source-correlate-start-server t)
   (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
-(use-package company-auctex
-  :ensure t)
-(company-auctex-init)
+;; (use-package company-auctex
+;;   :ensure t)
+;; (company-auctex-init)
 
 #+END_SRC
 ** emacs-jupyter
@@ -299,8 +323,8 @@ Don't add C-<backspace>'d words to kill ring
   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
 
-(require 'jupyter)
-(require 'jupyter-julia)
+;; (require 'jupyter)
+;; (require 'jupyter-julia)
 
 #+END_SRC 
 ** Org 
@@ -347,15 +371,15 @@ Don't add C-<backspace>'d words to kill ring
 
   (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
                                                       (:session . "jl")
-                                                      (:kernel . "julia-1.3")
-						      (:exports . "both")))
+                                                      (:kernel . "julia-1.5")
+						      (:exports . "both")
+						      (:results . "scalar")))
 
   ;;; display/update images in the buffer after I evaluate
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-
-  (setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
-
-  (setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3")
+(when (memq window-system '(mac ns x))
+  (progn (setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
+         (setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3")))
 
   (add-to-list 'safe-local-variable-values
 	       '(eval add-hook 'after-save-hook
@@ -402,18 +426,18 @@ Don't add C-<backspace>'d words to kill ring
 ** HTMLize
 #+BEGIN_SRC emacs-lisp
 
-(use-package htmlize
-  :ensure t
-  :defer t)
+;; (use-package htmlize
+;;   :ensure t
+;;   :defer t)
 
 #+END_SRC
 ** Eshell
 #+BEGIN_SRC emacs-lisp
 
-  (add-hook 'eshell-mode-hook
-	    (lambda () 
-	      (define-key eshell-mode-map (kbd "<tab>")
-		(lambda () (interactive) (pcomplete-std-complete)))))
+;; (add-hook 'eshell-mode-hook
+;; 	  (lambda () 
+;; 	    (define-key eshell-mode-map (kbd "<tab>")
+;; 	      (lambda () (interactive) (pcomplete-std-complete)))))
 
 #+END_SRC
 ** Julia
@@ -432,7 +456,7 @@ Don't add C-<backspace>'d words to kill ring
 
   (setq julia-repl-switches "-O3")
 
-  (setenv "JULIA_NUM_THREADS" "4")
+  (setenv "JULIA_NUM_THREADS" "6")
   ;; (my-leader-def
   ;;   :keymaps 'org-mode-map
   ;;   "s"  'julia-repl-send-region-or-line)
@@ -446,20 +470,20 @@ Don't add C-<backspace>'d words to kill ring
 
 ** Common Lisp
 #+BEGIN_SRC emacs-lisp
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
-(slime-setup '(slime-fancy))
+;; (setq inferior-lisp-program "/usr/local/bin/sbcl")
+;; (slime-setup '(slime-fancy))
 #+END_SRC
 ** TRAMP
 #+BEGIN_SRC emacs-lisp
 
-(setq password-cache-expiry nil)
+;; (setq password-cache-expiry nil)
 
-(defun cedar-shell ()
-  (interactive)
-  (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
-    (shell)))
+;; (defun cedar-shell ()
+;;   (interactive)
+;;   (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
+;;     (shell)))
 
-(require 'tramp-sh nil t)
+;; (require 'tramp-sh nil t)
 
 #+END_SRC
 ** TabNine
@@ -487,7 +511,7 @@ Don't add C-<backspace>'d words to kill ring
 #+END_SRC
 ** Flyspell
 #+BEGIN_SRC emacs-lisp
-(setq ispell-program-name "/usr/local/bin/aspell")
+(setq ispell-program-name "/usr/bin/aspell")
 #+END_SRC
 * Misc
 #+BEGIN_SRC emacs-lisp
@@ -517,12 +541,12 @@ Don't add C-<backspace>'d words to kill ring
 
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
-(set-face-attribute 
- 'default t :family "DejaVu mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
+;; (set-face-attribute 
+;;  'default t :family "DejaVu mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
 
-(set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "DejaVu Sans")
+(set-default-font "Fira Code Retina-10")
+(set-fontset-font t 'mathematical "STIX Two Math")
+(set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "Fira Code Retina")
 
 #+END_SRC
-
-
 
