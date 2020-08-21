@@ -1,7 +1,5 @@
 #+STARTUP: overview
 
-
-
 * Repos
 #+BEGIN_SRC emacs-lisp
  ;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -34,154 +32,151 @@
   ;; (add-to-list 'load-path "~/.emacs.d/packages/")
   ;; (add-to-list 'load-path "/Users/mason/julia-repl")
 
-
-
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 #+END_SRC
+
 * Key Config
 ** General
 #+BEGIN_SRC emacs-lisp
+(use-package general
+  :ensure t
+  :init
+  (which-key-mode)
+
+  (defconst my-leader [escape])
+
+  (general-create-definer my-leader-def
+    ;; :prefix my-leader
+    ;; or without a variable
+    :prefix [escape])
+
+  (which-key-add-key-based-replacements
+    "<escape> f" "files"
+    "<escape> fd" "dotfile"
+    "<escape> fc" "config files"
+    "<escape> <SPC>" "M-x"
+    "<escape> o" "open"
+    "<escape> m" "mode"
+    "<escape> l" "LaTeX"
+    "<escape> lp" "preview"
+    "<escape> r" "remove")
+
+  (defun select-current-line ()
+    "Select the current line"
+    (interactive)
+    (end-of-line) ; move to end of line
+    (set-mark (line-beginning-position)))
 
 
-  (use-package general
-    :ensure t
-    :init
-    (which-key-mode)
-  
-     (defconst my-leader [escape])
+  (defun remove-newlines-in-region ()
+    "Removes all newlines in the region."
+    (interactive)
+    (save-restriction
+      (narrow-to-region (point) (mark))
+      (goto-char (point-min))
+      (while (search-forward "\n" nil t) (replace-match " " nil t))))
 
-     (general-create-definer my-leader-def
-       ;; :prefix my-leader
-       ;; or without a variable
-       :prefix [escape])
+  (my-leader-def
+    "<SPC>" 'helm-M-x
+    "ff" 'helm-find-files
+    "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
+    "fc" '(lambda () (interactive) (find-file config-directory))
+    "s" 'save-buffer
+    "oe" 'eshell
+    "os" 'shell
+    "ot" 'term
+    "b"  'switch-to-buffer
+    "l"  'select-current-line
+    "t"  'iterm-send-text
+    "rq"  'remove-newlines-in-region)
 
-     (which-key-add-key-based-replacements
-       "<escape> f" "files"
-       "<escape> fd" "dotfile"
-       "<escape> fc" "config files"
-       "<escape> <SPC>" "M-x"
-       "<escape> o" "open"
-       "<escape> m" "mode"
-       "<escape> l" "LaTeX"
-       "<escape> lp" "preview"
-       "<escape> r" "remove")
+  (my-leader-def 
+    :keymaps 'LaTeX-mode-map
+    "mc" 'TeX-command-master
+    "mv" 'TeX-view
+    "mpb" 'preview-buffer
+    "mpr" 'preview-region
+    "mps" 'preview-section
+    "mpe" 'preview-environment
+    "mpd" 'preview-document
+    "me"  'LaTeX-environment)
 
-    (defun select-current-line ()
-      "Select the current line"
-      (interactive)
-      (end-of-line) ; move to end of line
-      (set-mark (line-beginning-position)))
+  (general-define-key 
+   "s-c" 'kill-ring-save
+   "s-x" 'kill-region
+   "s-v" 'yank
+   "s-b" 'yank-pop)
 
-  
-    (defun remove-newlines-in-region ()
-      "Removes all newlines in the region."
-      (interactive)
-      (save-restriction
-	(narrow-to-region (point) (mark))
-	(goto-char (point-min))
-	(while (search-forward "\n" nil t) (replace-match " " nil t))))
-
-    (my-leader-def
-      "<SPC>" 'helm-M-x
-      "ff" 'helm-find-files
-      "fd" '(lambda () (interactive) (find-file "~/.emacs.d/myinit.org"))
-      "fc" '(lambda () (interactive) (find-file config-directory))
-      "s" 'save-buffer
-      "oe" 'eshell
-      "os" 'shell
-      "ot" 'term
-      "b"  'switch-to-buffer
-      "l"  'select-current-line
-      "t"  'iterm-send-text
-      "rq"  'remove-newlines-in-region)
-
-    (my-leader-def 
-      :keymaps 'LaTeX-mode-map
-      "mc" 'TeX-command-master
-      "mv" 'TeX-view
-      "mpb" 'preview-buffer
-      "mpr" 'preview-region
-      "mps" 'preview-section
-      "mpe" 'preview-environment
-      "mpd" 'preview-document
-      "me"  'LaTeX-environment)
-
-    (general-define-key 
-     "s-c" 'kill-ring-save
-     "s-x" 'kill-region
-     "s-v" 'yank
-     "s-b" 'yank-pop)
-
-    (my-leader-def
-      :keymaps 'org-mode-map
-      "q" 'org-fill-paragraph
-      "cc" 'julia-repl-send-region-or-line))
+  (my-leader-def
+    :keymaps 'org-mode-map
+    "q" 'org-fill-paragraph
+    "cc" 'julia-repl-send-region-or-line))
 
 #+END_SRC
 ** Region Wrap
 #+BEGIN_SRC emacs-lisp
 
-  (use-package wrap-region
-    :init
-    (wrap-region-global-mode t))
+(use-package wrap-region
+  :init
+  (wrap-region-global-mode t))
 
 #+END_SRC
 ** Multiple-Cursors
 #+BEGIN_SRC emacs-lisp
 
-  (use-package multiple-cursors
-    :init
-    (general-define-key
-     "C-M-<mouse-1>" 'mc/add-cursor-on-click))
+(use-package multiple-cursors
+  :init
+  (general-define-key
+   "C-M-<mouse-1>" 'mc/add-cursor-on-click))
 
 #+END_SRC
 ** Misc.
 Don't add C-<backspace>'d words to kill ring
 #+BEGIN_SRC emacs-lisp
 
-  (defun is-in-gui()
-    (display-graphic-p))
-  (defmacro when-gui (&rest body)
-    "Works just like `progn' but will only evaluate expressions in VAR when Emacs is running in a GUI else just nil."
-    `(when (is-in-gui) ,@body))
-  (defmacro when-not-gui (&rest body)
-    `(when (not (is-in-gui)) ,@body))
+(defun is-in-gui()
+  (display-graphic-p))
+(defmacro when-gui (&rest body)
+  "Works just like `progn' but will only evaluate expressions in VAR when Emacs is running in a GUI else just nil."
+  `(when (is-in-gui) ,@body))
+(defmacro when-not-gui (&rest body)
+  `(when (not (is-in-gui)) ,@body))
 
 
-  (defun backward-delete-word (arg)
-    "Delete characters backward until encountering the beginning of a word.
-  With argument ARG, do this that many times."
-    (interactive "p")
-    (delete-region (point) (progn (backward-word arg) (point))))
+(defun backward-delete-word (arg)
+  "Delete characters backward until encountering the beginning of a word.
+With argument ARG, do this that many times."
+  (interactive "p")
+  (delete-region (point) (progn (backward-word arg) (point))))
 
-  (general-define-key 
-   "C-<backspace>" 'backward-delete-word)
+(general-define-key 
+ "C-<backspace>" 'backward-delete-word)
 
-  ;; use option key for meta
-  (setq mac-option-modifier 'meta)
+;; use option key for meta
+(setq mac-option-modifier 'meta)
 
 
-  (when-not-gui
-   (defvar personal/fast-keyseq-timeout 200)
+(when-not-gui
+ (defvar personal/fast-keyseq-timeout 200)
 
-   (defun personal/-tty-ESC-filter (map)
-     (if (and (equal (this-single-command-keys) [?\e])
-	      (sit-for (/ personal/fast-keyseq-timeout 1000.0)))
-	 [escape] map))
+ (defun personal/-tty-ESC-filter (map)
+   (if (and (equal (this-single-command-keys) [?\e])
+	    (sit-for (/ personal/fast-keyseq-timeout 1000.0)))
+       [escape] map))
 
-   (defun personal/-lookup-key (map key)
-     (catch 'found
-       (map-keymap (lambda (k b) (if (equal key k) (throw 'found b))) map)))
+ (defun personal/-lookup-key (map key)
+   (catch 'found
+     (map-keymap (lambda (k b) (if (equal key k) (throw 'found b))) map)))
 
-   (defun personal/catch-tty-ESC ()
-     "Setup key mappings of current terminal to turn a tty's ESC into `escape'."
-     (when (memq (terminal-live-p (frame-terminal)) '(t pc))
-       (let ((esc-binding (personal/-lookup-key input-decode-map ?\e)))
-	 (define-key input-decode-map
-	   [?\e] `(menu-item "" ,esc-binding :filter personal/-tty-ESC-filter)))))
+ (defun personal/catch-tty-ESC ()
+   "Setup key mappings of current terminal to turn a tty's ESC into `escape'."
+   (when (memq (terminal-live-p (frame-terminal)) '(t pc))
+     (let ((esc-binding (personal/-lookup-key input-decode-map ?\e)))
+       (define-key input-decode-map
+	 [?\e] `(menu-item "" ,esc-binding :filter personal/-tty-ESC-filter)))))
 
-   (personal/catch-tty-ESC))
+ (personal/catch-tty-ESC))
 
 
 
@@ -426,9 +421,9 @@ Don't add C-<backspace>'d words to kill ring
 ** HTMLize
 #+BEGIN_SRC emacs-lisp
 
-;; (use-package htmlize
-;;   :ensure t
-;;   :defer t)
+(use-package htmlize
+  :ensure t
+  :defer t)
 
 #+END_SRC
 ** Eshell
@@ -544,9 +539,15 @@ Don't add C-<backspace>'d words to kill ring
 ;; (set-face-attribute 
 ;;  'default t :family "DejaVu mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
 
-(set-default-font "Fira Code Retina-10")
-(set-fontset-font t 'mathematical "STIX Two Math")
-(set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "Fira Code Retina")
+;; (set-default-font "Fira Code Retina-10")
+;; (set-fontset-font t 'mathematical "STIX Two Math")
+;; (set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "Fira Code Retina")
+
+(set-default-font "JuliaMono-10")
+;; (set-fontset-font t 'mathematical "STIX Two Math")
+(set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "JuliaMono")
+
+
 
 #+END_SRC
 

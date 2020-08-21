@@ -29,6 +29,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(LaTeX-command "latex -synctex=1")
  '(custom-safe-themes
    (quote
     ("9d9fda57c476672acd8c6efeb9dc801abea906634575ad2c7688d055878e69d6" "8891c81848a6cf203c7ac816436ea1a859c34038c39e3cf9f48292d8b1c86528" "6b289bab28a7e511f9c54496be647dc60f5bd8f9917c9495978762b99d8c96a0" "57f95012730e3a03ebddb7f2925861ade87f53d5bbb255398357731a7b1ac0e0" "ce3e6c12b48979ce89754884d913c7ecc8a7956543d8b09ef13abfab6af9aa35" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
@@ -40,7 +41,7 @@
  '(org-startup-truncated nil)
  '(package-selected-packages
    (quote
-    (magit magit-popup auto-package-update fira-code-mode company-auctex auto-complete-auctex ac-capf quelpa-use-package quelpa zones fireplace auctex-latexmk company-tabnine julia-repl projectile company-lsp lsp-ui lsp-mode atom-one-dark-theme markdown-mode solarized-theme rainbow-delimiters ein slime isend-mode texfrag 2048-game multiple-cursors undo-tree 0xc pdf-tools use-package company auctex julia-mode general 0blayout which-key guide-key helm doom-themes))))
+    (htmlize magit magit-popup auto-package-update fira-code-mode company-auctex auto-complete-auctex ac-capf quelpa-use-package quelpa zones fireplace auctex-latexmk company-tabnine julia-repl projectile company-lsp lsp-ui lsp-mode atom-one-dark-theme markdown-mode solarized-theme rainbow-delimiters ein slime isend-mode texfrag 2048-game multiple-cursors undo-tree 0xc pdf-tools use-package company auctex julia-mode general 0blayout which-key guide-key helm doom-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
