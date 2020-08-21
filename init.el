@@ -1,27 +1,3 @@
-(require 'package)
-(setq package-enable-at-startup nil)
-
-(setq package-archives
-      '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
-        ("MELPA Stable" . "https://stable.melpa.org/packages/")
-        ("MELPA"        . "https://melpa.org/packages/"))
-      package-archive-priorities
-      '(("MELPA Stable" . 10)
-        ("GNU ELPA"     . 5)
-        ("MELPA"        . 0)))
-
-(package-initialize)
-
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-	(package-refresh-contents)
-	(package-install 'use-package))
-
-(eval-when-compile
-  (require 'use-package))
-
-
-
 (org-babel-load-file (expand-file-name "~/.emacs.d/myinit.org"))
 
 (custom-set-variables

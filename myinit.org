@@ -2,36 +2,31 @@
 
 * Repos
 #+BEGIN_SRC emacs-lisp
- ;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(require 'package)
+(setq package-enable-at-startup nil)
+
+(setq package-archives
+      '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
+        ("MELPA Stable" . "https://stable.melpa.org/packages/")
+        ("MELPA"        . "https://melpa.org/packages/"))
+      package-archive-priorities
+      '(("MELPA Stable" . 10)
+        ("GNU ELPA"     . 5)
+        ("MELPA"        . 0)))
+
+(package-initialize)
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+	(package-refresh-contents)
+	(package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+
 #+END_SRC
 * Paths
 #+BEGIN_SRC emacs-lisp
-  ;; (load-library "url-handlers")
-
-  ;; (setq backup-directory-alist '(("." . "~/.emacs-saves")))
-
-  ;; (defconst home-directory "$HOME")
-  ;; (defconst emacs-directory (concat home-directory ".emacs.d/"))
-  ;; (defconst config-directory (concat emacs-directory "config/"))
-  ;; (defconst package-directory (concat emacs-directory "packages/"))
-
-  ;; (add-to-list 'load-path (concat package-directory ""))
-  ;; (add-to-list 'load-path (concat package-directory "evil-leader"))
-  ;; (add-to-list 'load-path (concat package-directory "evil"))
-  ;; (add-to-list 'load-path (concat package-directory "emacs-grammarly"))
-  ;; (add-to-list 'load-path (concat package-directory "julia-repl"))
-  ;; (add-to-list 'load-path (concat package-directory "lsp-julia"))
-  ;; (add-to-list 'load-path (concat package-directory "ob-julia"))
-  ;; (add-to-list 'load-path (concat package-directory "ESS/lisp"))
-
-  ;; (add-to-list 'load-path "~/.emacs.d/packages/evil-leader/")
-  ;; (add-to-list 'load-path "~/.emacs.d/packages/evil/")
-  ;; (add-to-list 'load-path "~/.emacs.d/packages/emacs-grammarly/")
-  ;; ;(add-to-list 'load-path "~/.emacs.d/packages/ESS/lisp/")
-  ;; (add-to-list 'load-path "~/.emacs.d/packages/ob-julia")
-  ;; (add-to-list 'load-path "~/.emacs.d/packages/")
-  ;; (add-to-list 'load-path "/Users/mason/julia-repl")
-
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 #+END_SRC
@@ -114,14 +109,6 @@
     "cc" 'julia-repl-send-region-or-line))
 
 #+END_SRC
-** Region Wrap
-#+BEGIN_SRC emacs-lisp
-
-(use-package wrap-region
-  :init
-  (wrap-region-global-mode t))
-
-#+END_SRC
 ** Multiple-Cursors
 #+BEGIN_SRC emacs-lisp
 
@@ -189,6 +176,14 @@ With argument ARG, do this that many times."
 
 #+END_SRC
 
+* Region Wrap
+#+BEGIN_SRC emacs-lisp
+
+(use-package wrap-region
+  :init
+  (wrap-region-global-mode t))
+
+#+END_SRC
 * Helm
 #+BEGIN_SRC emacs-lisp
 
@@ -232,33 +227,19 @@ With argument ARG, do this that many times."
 (global-undo-tree-mode)
 #+END_SRC
 
-* Applications
-** AutoUpdate
-#+BEGIN_SRC emacs-lisp
-;; (use-package auto-package-update
-;;   :ensure t
-;;   :config
-;;   (setq auto-package-update-delete-old-versions t)
-;;   (setq auto-package-update-hide-results t)
-;;   (auto-package-update-maybe))
-#+END_SRC
-
-** Magit
+* Magit
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-   :ensure t)
-;; (require 'magit)
+  :ensure t)
 #+END_SRC
 
-** Prog modes
+* Prog modes
 #+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
 
-** TeX
+* TeX
 #+BEGIN_SRC emacs-lisp
-
-;; (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
 
 (use-package reftex
   :ensure t)
@@ -304,9 +285,8 @@ With argument ARG, do this that many times."
 ;; (company-auctex-init)
 
 #+END_SRC
-** emacs-jupyter
+* emacs-jupyter
 #+BEGIN_SRC emacs-lisp
-;; (add-to-list 'load-path "~/emacs-jupyter")
 (use-package popup
   :ensure t)
 (use-package jupyter
@@ -317,12 +297,8 @@ With argument ARG, do this that many times."
   (setq jupyter-eval-short-result-display-function 'popup-tip)
   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
-
-;; (require 'jupyter)
-;; (require 'jupyter-julia)
-
 #+END_SRC 
-** Org 
+* Org 
 #+BEGIN_SRC emacs-lisp
 
 (with-eval-after-load "org"
@@ -332,7 +308,6 @@ With argument ARG, do this that many times."
 	org-confirm-babel-evaluate nil
 	org-edit-src-content-indentation 0)
 
-					;(require 'ob-ipython)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -340,11 +315,14 @@ With argument ARG, do this that many times."
      (jupyter . t)))
 
   (setq org-confirm-babel-evaluate nil)
+
+  ;; Type <j then tab key to create julia src block
   (add-to-list 'org-structure-template-alist
 	       '("j" "#+BEGIN_SRC julia
   ? 
   ,#+END_SRC"))
 
+  ;; Type <jj then tab key to create jupyter-julia src block
   (add-to-list 'org-structure-template-alist
 	       '("jj" "#+BEGIN_SRC jupyter-julia
 ?
@@ -364,17 +342,23 @@ With argument ARG, do this that many times."
   \\end{align*}
   ,#+END_latex"))
 
+  (add-to-list 'org-structure-template-alist
+	       '("el" "#+BEGIN_SRC elisp
+  ? 
+  ,#+END_SRC"))
+
   (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
                                                       (:session . "jl")
                                                       (:kernel . "julia-1.5")
 						      (:exports . "both")
 						      (:results . "scalar")))
 
-  ;;; display/update images in the buffer after I evaluate
+  ;; display/update images in the buffer after I evaluate
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-(when (memq window-system '(mac ns x))
-  (progn (setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
-         (setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3")))
+  ;; Use Python3 on macos
+  (when (memq window-system '(mac ns x))
+    (progn (setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
+	   (setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3")))
 
   (add-to-list 'safe-local-variable-values
 	       '(eval add-hook 'after-save-hook
@@ -413,12 +397,10 @@ With argument ARG, do this that many times."
     (set-face-attribute 'org-level-2 nil :height 1.15)
     (set-face-attribute 'org-level-3 nil :height 1.05))
   (add-hook 'org-load-hook #'my/org-mode-hook)
-  (add-hook 'org-mode-hook 'my/org-mode-hook)
-
-  )
+  (add-hook 'org-mode-hook 'my/org-mode-hook))
 
 #+END_SRC
-** HTMLize
+* HTMLize
 #+BEGIN_SRC emacs-lisp
 
 (use-package htmlize
@@ -426,16 +408,7 @@ With argument ARG, do this that many times."
   :defer t)
 
 #+END_SRC
-** Eshell
-#+BEGIN_SRC emacs-lisp
-
-;; (add-hook 'eshell-mode-hook
-;; 	  (lambda () 
-;; 	    (define-key eshell-mode-map (kbd "<tab>")
-;; 	      (lambda () (interactive) (pcomplete-std-complete)))))
-
-#+END_SRC
-** Julia
+* Julia
 #+BEGIN_SRC emacs-lisp
 
 (use-package julia-repl
@@ -457,54 +430,13 @@ With argument ARG, do this that many times."
   ;;   "s"  'julia-repl-send-region-or-line)
 
   ;; (my-leader-def
-  ;;   :keymaps 'julia-mode-map
   ;;   "s"  'julia-repl-send-region-or-line)
 )
 
 #+END_SRC
 
-** Common Lisp
-#+BEGIN_SRC emacs-lisp
-;; (setq inferior-lisp-program "/usr/local/bin/sbcl")
-;; (slime-setup '(slime-fancy))
-#+END_SRC
-** TRAMP
-#+BEGIN_SRC emacs-lisp
 
-;; (setq password-cache-expiry nil)
-
-;; (defun cedar-shell ()
-;;   (interactive)
-;;   (let ((default-directory "/ssh:mprotter@cedar.computecanada.ca:"))
-;;     (shell)))
-
-;; (require 'tramp-sh nil t)
-
-#+END_SRC
-** TabNine
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package company-tabnine :ensure t)
-;; (add-to-list 'company-backends #'company-tabnine)
-;; ;; Trigger completion immediately.
-;; (setq company-idle-delay 0)
-
-;; ;; Number the candidates (use M-1, M-2 etc to select completions).
-;; (setq company-show-numbers t)
-
-;; ;; Use the tab-and-go frontend.
-;; ;; Allows TAB to select and complete at the same time.
-;; (company-tng-configure-default)
-;; (setq company-frontends
-;;       '(company-tng-frontend
-;; 	company-pseudo-tooltip-frontend
-;; 	company-echo-metadata-frontend))
-
-
-
-
-#+END_SRC
-** Flyspell
+* Flyspell
 #+BEGIN_SRC emacs-lisp
 (setq ispell-program-name "/usr/bin/aspell")
 #+END_SRC
@@ -526,28 +458,10 @@ With argument ARG, do this that many times."
 ;; Global company mode
 (add-hook 'after-init-hook 'global-company-mode)
 
-;; Set font
-;; Set default font
-;; (set-face-attribute 'default nil
-;; 		      :family "SF Mono"
-;; 		      :height 130
-;; 		      :weight 'normal
-;; 		      :width 'normal)
-
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
-;; (set-face-attribute 
-;;  'default t :family "DejaVu mono" :foundry "nil" :slant 'normal :weight 'normal :height 181 :width 'normal)
-
-;; (set-default-font "Fira Code Retina-10")
-;; (set-fontset-font t 'mathematical "STIX Two Math")
-;; (set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "Fira Code Retina")
-
 (set-default-font "JuliaMono-10")
-;; (set-fontset-font t 'mathematical "STIX Two Math")
 (set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "JuliaMono")
-
-
 
 #+END_SRC
 
