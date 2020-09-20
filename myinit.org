@@ -27,13 +27,21 @@
 #+END_SRC
 * Paths
 #+BEGIN_SRC emacs-lisp
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+    :ensure t
+    :init
+    (when (memq window-system '(mac ns x))
+  	(exec-path-from-shell-initialize)))
+
+
 #+END_SRC
 
 * Key Config
 ** General
 #+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure t)
+
 (use-package general
   :ensure t
   :init
@@ -113,6 +121,7 @@
 #+BEGIN_SRC emacs-lisp
 
 (use-package multiple-cursors
+  :ensure t
   :init
   (general-define-key
    "C-M-<mouse-1>" 'mc/add-cursor-on-click))
@@ -180,12 +189,15 @@ With argument ARG, do this that many times."
 #+BEGIN_SRC emacs-lisp
 
 (use-package wrap-region
+  :ensure t
   :init
   (wrap-region-global-mode t))
 
 #+END_SRC
 * Helm
 #+BEGIN_SRC emacs-lisp
+(use-package helm
+  :ensure t)
 
 (use-package helm-config
   :init
@@ -200,13 +212,15 @@ With argument ARG, do this that many times."
 #+END_SRC
 * Doom-Theme
 #+BEGIN_SRC emacs-lisp
-
-(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+(use-package doom-themes
+  :ensure t
+  :init
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic t) ; if nil, italics is universally disabled
-(load-theme 'doom-one t)
-(doom-themes-visual-bell-config)
-(doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
-(doom-themes-org-config)
+  (load-theme 'doom-one t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+  (doom-themes-org-config))
 
 
 (defun is-in-gui()
@@ -224,8 +238,19 @@ With argument ARG, do this that many times."
 
 * Undo-Tree
 #+BEGIN_SRC emacs-lisp
-(global-undo-tree-mode)
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode))
 #+END_SRC
+
+* Company
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t)
+#+END_SRC
+
+
 
 * Magit
 #+BEGIN_SRC emacs-lisp
@@ -235,6 +260,9 @@ With argument ARG, do this that many times."
 
 * Prog modes
 #+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
 
@@ -427,9 +455,10 @@ With argument ARG, do this that many times."
 * Misc
 #+BEGIN_SRC emacs-lisp
 (menu-bar-mode 1)
-;; (electric-pair-mode t)
-;; (defvar latex-electric-pairs 
-;;   '((\left . \right)) "Electric pairs for latex.")
+
+(electric-pair-mode t)
+(defvar latex-electric-pairs 
+  '((\left . \right)) "Electric pairs for latex.")
 
 ;; (defun latex-add-electric-pairs ()
 ;;   (setq-local electric-pair-pairs 
