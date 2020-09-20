@@ -489,7 +489,7 @@ With argument ARG, do this that many times."
 
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
-(set-default-font "JuliaMono-12")
+;;(set-default-font "JuliaMono-12")
 (set-fontset-font "fontset-default"  '(#x2800 . #x28FF) "JuliaMono")
 
 #+END_SRC
