@@ -32,9 +32,9 @@
     :init
     (when (memq window-system '(mac ns x))
   	(exec-path-from-shell-initialize)))
-
-
 #+END_SRC
+
+
 
 * Key Config
 ** General
@@ -292,7 +292,8 @@ With argument ARG, do this that many times."
      (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
      ;; (setq TeX-view-program-list
      ;; 	   '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-     (setq  TeX-view-evince-keep-focus nil)))
+     (setq TeX-source-correlate-mode t)
+     (setq TeX-view-evince-keep-focus nil)))
 
   ;; Update PDF buffers after successful LaTeX runs
   (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
@@ -327,6 +328,9 @@ With argument ARG, do this that many times."
 
 #+END_SRC 
 * Org 
+
+
+
 #+BEGIN_SRC emacs-lisp
 
 (with-eval-after-load "org"
@@ -344,7 +348,7 @@ With argument ARG, do this that many times."
 
   (setq org-confirm-babel-evaluate nil)
 
-  ;; Type <j then tab key to create julia src block
+  ;; Type C-c C-, to open the template options
   (add-to-list 'org-structure-template-alist
 	       '("jj"  . "src jupyter-julia"))
   (add-to-list 'org-structure-template-alist
@@ -354,7 +358,7 @@ With argument ARG, do this that many times."
 
   (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
                                                       (:session . "jl")
-                                                      (:kernel . "julia-1.5")
+                                                      (:kernel . "julia-1.6")
 						      (:exports . "both")
 						      (:results . "scalar")))
 
@@ -432,7 +436,7 @@ With argument ARG, do this that many times."
   ;;(add-hook 'julia-mode-hook 'texfrag-mode)
   (setq julia-repl-executable-records
    '((default "~/julia/./julia")
-     (default "~/julia/./julia")))
+     (master  "~/build/julia/./julia")))
 
   (setq julia-repl-switches "-O3")
 
