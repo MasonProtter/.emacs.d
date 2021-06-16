@@ -38,6 +38,7 @@
 
 * Key Config
 ** General
+
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure t)
@@ -111,10 +112,16 @@
    "s-v" 'yank
    "s-b" 'yank-pop)
 
+  (defun org-select-block-and-send-to-julia-repl()
+    (interactive)
+    (org-babel-mark-block)
+    (julia-repl-send-region-or-line))
+
   (my-leader-def
     :keymaps 'org-mode-map
     "q" 'org-fill-paragraph
-    "cc" 'julia-repl-send-region-or-line))
+    "cc" 'julia-repl-send-region-or-line
+    "cr" 'org-select-block-and-send-to-julia-repl))
 
 #+END_SRC
 ** Multiple-Cursors
@@ -124,9 +131,11 @@
   :ensure t
   :init
   (general-define-key
-   "C-M-<mouse-1>" 'mc/add-cursor-on-click))
+   "C-M-<mouse-1>" 'mc/add-cursor-on-click
+   "C-M-S-s-<mouse-1>" 'mc/add-cursor-on-click))
 
 #+END_SRC
+
 ** Misc.
 Don't add C-<backspace>'d words to kill ring
 #+BEGIN_SRC emacs-lisp
@@ -181,7 +190,7 @@ With argument ARG, do this that many times."
 
 #+BEGIN_SRC emacs-lisp
 
-  (delete-selection-mode 1)
+(delete-selection-mode 1)
 
 #+END_SRC
 
@@ -210,6 +219,18 @@ With argument ARG, do this that many times."
 
 
 #+END_SRC
+* vterm
+#+begin_src elisp
+(use-package vterm
+    :ensure t)
+(setq vterm-kill-buffer-on-exit nil)
+
+(use-package multi-vterm 
+  :ensure t)
+
+#+end_src
+
+
 * Doom-Theme
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes
@@ -277,6 +298,7 @@ With argument ARG, do this that many times."
   :mode ("\\.tex\\'" . latex-mode)
   :config
   (custom-set-variables '(LaTeX-command "latex -synctex=1"))
+
   (setq reftex-plug-into-AUCTeX t)
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
@@ -303,6 +325,7 @@ With argument ARG, do this that many times."
 	    #'TeX-revert-document-buffer)
   ;; to use pdfview with auctex
   (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
+  (add-hook 'LaTeX-mode-hook #'toggle-word-wrap)
 
   ;; to use pdfview with auctex
   (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
@@ -314,6 +337,23 @@ With argument ARG, do this that many times."
 ;; (company-auctex-init)
 
 #+END_SRC
+* julia-vterm
+#+begin_src elisp
+;; (use-package julia-vterm
+;;   :ensure t)
+;; (package-install-file ".emacs.d/ob-julia-vterm.el/ob-julia-vterm.el")
+
+;; (setq julia-vterm-repl-program "~/julia/./julia")
+
+;; (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
+
+#+end_src
+
+#+RESULTS:
+: org-babel-julia-vterm--make-str-to-run
+
+
+
 * emacs-jupyter
 #+BEGIN_SRC emacs-lisp
 (use-package popup
@@ -326,15 +366,13 @@ With argument ARG, do this that many times."
   (setq jupyter-eval-short-result-display-function 'popup-tip)
   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
-#+END_SRC 
+#+END_SRC
+
 * Org 
-
-
 
 #+BEGIN_SRC emacs-lisp
 
 (with-eval-after-load "org"
-
   (setq org-src-fontify-natively t
 	org-src-tab-acts-natively t
 	org-confirm-babel-evaluate nil
@@ -344,7 +382,9 @@ With argument ARG, do this that many times."
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
-     (jupyter . t)))
+     (jupyter . t)
+     ;; (julia-vterm . t)
+     ))
 
   (setq org-confirm-babel-evaluate nil)
 
@@ -356,6 +396,13 @@ With argument ARG, do this that many times."
   (add-to-list 'org-structure-template-alist
 	       '("el"  . "src elisp"))
 
+  
+  (org-babel-jupyter-override-src-block "julia")
+
+  ;; (setq org-babel-default-header-args:julia '((:async . "yes")
+  ;;                                             (:session . "vjl")
+  ;; 					      (:exports . "both")))
+  
   (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
                                                       (:session . "jl")
                                                       (:kernel . "julia-1.6")
@@ -413,7 +460,9 @@ With argument ARG, do this that many times."
     (set-face-attribute 'org-level-2 nil :height 1.15)
     (set-face-attribute 'org-level-3 nil :height 1.05))
   (add-hook 'org-load-hook #'my/org-mode-hook)
-  (add-hook 'org-mode-hook 'my/org-mode-hook))
+  (add-hook 'org-mode-hook 'my/org-mode-hook)
+  (add-hook 'org-mode-hook #'toggle-word-wrap))
+
 
 #+END_SRC
 * HTMLize
@@ -429,7 +478,6 @@ With argument ARG, do this that many times."
 
 (use-package julia-repl
   :ensure t
-  :defer t
   :init
   (add-hook 'julia-mode-hook 'julia-repl-mode)
   ;;(add-hook 'julia-mode-hook 'company-mode)
@@ -448,6 +496,7 @@ With argument ARG, do this that many times."
   ;; (my-leader-def
   ;;   "s"  'julia-repl-send-region-or-line)
 )
+(julia-repl-set-terminal-backend 'vterm)
 
 #+END_SRC
 
@@ -477,16 +526,17 @@ With argument ARG, do this that many times."
 
 (add-hook 'emacs-mode-hook 'ac-capf-setup)
 
-
 (add-to-list 'default-frame-alist
              '(font . "JuliaMono-10"))
+
+(set-fontset-font "fontset-default"  '(#xe000 . #xf8ff) "JuliaMono-10")
+
+
 
 (use-package smartparens
   :ensure t)
 (require 'smartparens-config)
 (smartparens-global-mode t)
 
-
-
-  
 #+END_SRC
+
