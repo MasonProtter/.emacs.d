@@ -340,17 +340,67 @@ With argument ARG, do this that many times."
 
 #+END_SRC
 
+* julia-vterm
+#+begin_src elisp
+;; (use-package julia-vterm
+;;   :ensure t)
+;; (package-install-file ".emacs.d/ob-julia-vterm.el/ob-julia-vterm.el")
+
+;; (setq julia-vterm-repl-program "~/julia/./julia")
+
+;; (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
+
+#+end_src
+
+#+RESULTS:
+: org-babel-julia-vterm--make-str-to-run
+
+
+* julia-snail
+#+begin_src elisp
+(use-package julia-snail
+  :ensure t
+  :hook (julia-mode . julia-snail-mode))
+
+(setq julia-snail-executable "/home/mason/julia/./julia")
+
+(defun julia-snail-copy-repl-region ()
+  "Copy the region (requires transient-mark) to the Julia REPL and evaluate it.
+This is not module-context aware."
+  (interactive)
+  (if (null (use-region-p))
+      (julia-snail-send-line)
+    (let* ((block-start (region-beginning))
+           (block-end (region-end))
+           (text (s-trim (buffer-substring-no-properties block-start block-end))))
+      (julia-snail--send-to-repl text)
+      (julia-snail--flash-region (point-at-bol) (point-at-eol)))))
+
+
+(general-define-key
+ :keymaps 'julia-snail-mode-map
+ "C-c C-l" 'julia-snail-copy-repl-region)
+#+end_src
+
+* Markdown
+#+begin_src elisp
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown"))
+#+end_src
+
+
 * emacs-jupyter
 #+BEGIN_SRC emacs-lisp
-(use-package popup
-  :ensure t)
-(use-package jupyter
-  :ensure t
-  :config
-  (require 'jupyter-python)
-  (require 'jupyter-julia)
-  (setq jupyter-eval-short-result-display-function 'popup-tip)
-  (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
+;; (use-package popup
+;;   :ensure t)
+;; (use-package jupyter
+;;   :ensure t
+;;   :config
+;;   (require 'jupyter-julia)
+;;   (setq jupyter-eval-short-result-display-function 'popup-tip)
+;;   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
 #+END_SRC
 
@@ -368,7 +418,7 @@ With argument ARG, do this that many times."
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
-     (jupyter . t)
+     ;; (jupyter . t)
      ;; (julia-vterm . t)
      ))
 
@@ -380,6 +430,12 @@ With argument ARG, do this that many times."
   (add-to-list 'org-structure-template-alist
 	       '("el"  . "src elisp"))
 
+<<<<<<< HEAD
+=======
+  
+  ;; (org-babel-jupyter-override-src-block "julia")
+
+>>>>>>> f123df4bbf6e25e047b83b9327989a4694a04d5b
   ;; (setq org-babel-default-header-args:julia '((:async . "yes")
   ;;                                             (:session . "vjl")
   ;; 					      (:exports . "both")))
@@ -390,11 +446,11 @@ With argument ARG, do this that many times."
 						      (:exports . "both")
 						      (:results . "scalar")))
 
-  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                       (:session . "py")
-                                                       (:kernel . "python3")
-						       (:exports . "both")
-						       (:results . "scalar")))
+  ;; (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+  ;;                                                      (:session . "py")
+  ;;                                                      (:kernel . "python3")
+  ;; 						       (:exports . "both")
+  ;; 						       (:results . "scalar")))
 
 
   ;; display/update images in the buffer after I evaluate
@@ -485,6 +541,19 @@ With argument ARG, do this that many times."
 * Flyspell
 #+BEGIN_SRC emacs-lisp
 (setq ispell-program-name "/usr/bin/aspell")
+
+(let ((langs '("american" "deutsch")))
+  (setq lang-ring (make-ring (length langs)))
+  (dolist (elem langs) (ring-insert lang-ring elem)))
+
+(defun cycle-ispell-languages ()
+  (interactive)
+  (let ((lang (ring-ref lang-ring -1)))
+    (ring-insert lang-ring lang)
+    (ispell-change-dictionary lang)))
+
+(global-set-key [f6] 'cycle-ispell-languages)
+
 #+END_SRC
 * Misc
 #+BEGIN_SRC emacs-lisp
@@ -520,4 +589,7 @@ With argument ARG, do this that many times."
 (smartparens-global-mode t)
 
 #+END_SRC
+
+
+
 
