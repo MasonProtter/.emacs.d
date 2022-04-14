@@ -447,19 +447,19 @@ end"
 * Code Cells
 
 #+begin_src elisp
-(use-package code-cells
-  :ensure t
-  :hook (julia-mode . code-cells-mode)
-  :config
-  (add-to-list 'code-cells-eval-region-commands '(julia-snail-mode . julia-snail-send-code-cell)))
+;; (use-package code-cells
+;;   :ensure t
+;;   :hook (julia-mode . code-cells-mode)
+;;   :config
+;;   (add-to-list 'code-cells-eval-region-commands '(julia-snail-mode . julia-snail-send-code-cell)))
 #+end_src
 
 * Quarto
 
 #+begin_src elisp
-(use-package quarto-mode
-  :ensure t
-  )
+;; (use-package quarto-mode
+;;   :ensure t
+;;   )
 #+end_src
 
 * Markdown
