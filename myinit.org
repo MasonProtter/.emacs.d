@@ -344,7 +344,9 @@ With argument ARG, do this that many times."
 #+begin_src elisp
 ;; (use-package julia-vterm
 ;;   :ensure t)
-;; (package-install-file ".emacs.d/ob-julia-vterm.el/ob-julia-vterm.el")
+;; (use-package ob-julia-vterm
+;;   :ensure t)
+;; #(package-install-file ".emacs.d/ob-julia-vterm.el/ob-julia-vterm.el")
 
 ;; (setq julia-vterm-repl-program "~/julia/./julia")
 
@@ -362,7 +364,7 @@ With argument ARG, do this that many times."
   :ensure t
   :hook (julia-mode . julia-snail-mode))
 
-(setq julia-snail-executable "/home/mason/julia/./julia")
+(setq julia-snail-executable "~/julia/./julia")
 
 (defun julia-snail-copy-repl-region ()
   "Copy the region (requires transient-mark) to the Julia REPL and evaluate it.
@@ -380,6 +382,84 @@ This is not module-context aware."
 (general-define-key
  :keymaps 'julia-snail-mode-map
  "C-c C-l" 'julia-snail-copy-repl-region)
+
+
+(defun org-babel-execute:julia (body params)
+  (let ((src-file (org-babel-temp-file "julia-src-"))
+		(out-file (org-babel-temp-file "julia-out-")))
+	(with-temp-file src-file (insert body))
+	(org-babel-julia-evaluate body src-file out-file)
+	(let ((c 0))
+      (while (and (< c 100) (= 0 (file-attribute-size (file-attributes out-file))))
+		(sit-for 0.1)
+		(setq c (1+ c))))
+    (with-temp-buffer
+      (insert-file-contents out-file)
+      (let ((bs (buffer-string)))
+		(if (catch 'loop
+			  (dolist (line (split-string bs "\n"))
+				(if (> (length line) 12000)
+					(throw 'loop t))))
+			"Output suppressed (line too long)"
+		  bs)))))
+
+
+;; )
+
+(defun org-babel-julia-evaluate (body src-file out-file)
+  ;; (src (org-babel-julia-vterm--wrap-body result-type session body))
+  (let* ((filename (julia-snail--efn (buffer-file-name (buffer-base-buffer))))
+         (module :Main)
+         (line-num 0)
+		 (text (format "\
+ begin
+     using Logging: Logging; var\"#out_file#\" = \"%s\"; 
+     open(var\"#out_file#\", \"w+\") do io
+         logger = Base.SimpleLogger(io)
+         redirect_stdout(io) do
+             Logging.with_logger(logger) do
+                 result = try
+                     include(\"%s\")
+                 catch err;
+                     Base.display_error(IOContext(stdout, :color => true), err, Base.catch_backtrace())
+                 end
+                 result === nothing || show(IOContext(stdout, :limit => true, :module => Main), \"text/plain\", result)
+             end  
+         end
+     end
+     open(io -> println(read(io, String)), var\"#out_file#\") 
+ end\n"
+		  out-file src-file)))
+    (julia-snail--send-to-repl text)))
+
+(defun ek/babel-ansi ()
+  (when-let ((beg (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char beg)
+      (when (looking-at org-babel-result-regexp)
+        (let ((end (org-babel-result-end))
+              (ansi-color-context-region nil))
+          (ansi-color-apply-on-region beg end))))))
+(add-hook 'org-babel-after-execute-hook 'ek/babel-ansi)
+
+#+end_src
+
+* Code Cells
+
+#+begin_src elisp
+(use-package code-cells
+  :ensure t
+  :hook (julia-mode . code-cells-mode)
+  :config
+  (add-to-list 'code-cells-eval-region-commands '(julia-snail-mode . julia-snail-send-code-cell)))
+#+end_src
+
+* Quarto
+
+#+begin_src elisp
+(use-package quarto-mode
+  :ensure t
+  )
 #+end_src
 
 * Markdown
@@ -428,14 +508,12 @@ This is not module-context aware."
   (add-to-list 'org-structure-template-alist
 	       '("jj"  . "src jupyter-julia"))
   (add-to-list 'org-structure-template-alist
+			 '("j"  . "src julia"))
+  (add-to-list 'org-structure-template-alist
 	       '("el"  . "src elisp"))
-
-<<<<<<< HEAD
-=======
   
   ;; (org-babel-jupyter-override-src-block "julia")
 
->>>>>>> f123df4bbf6e25e047b83b9327989a4694a04d5b
   ;; (setq org-babel-default-header-args:julia '((:async . "yes")
   ;;                                             (:session . "vjl")
   ;; 					      (:exports . "both")))
