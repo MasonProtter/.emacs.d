@@ -505,8 +505,8 @@ This is not module-context aware."
   (setq org-confirm-babel-evaluate nil)
 
   ;; Type C-c C-, to open the template options
-  (add-to-list 'org-structure-template-alist
-	       '("jj"  . "src jupyter-julia"))
+  ;; (add-to-list 'org-structure-template-alist
+  ;; 	       '("jj"  . "src jupyter-julia"))
   (add-to-list 'org-structure-template-alist
 			 '("j"  . "src julia"))
   (add-to-list 'org-structure-template-alist
