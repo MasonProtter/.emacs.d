@@ -386,7 +386,6 @@ With argument ARG, do this that many times."
   :init (setq markdown-command "multimarkdown"))
 #+end_src
 
-
 * emacs-jupyter
 #+BEGIN_SRC emacs-lisp
 ;; (use-package popup
@@ -490,7 +489,6 @@ With argument ARG, do this that many times."
 
 
 (defun my/org-mode-hook ()
-  (message "hi")
   (set-face-attribute 'org-level-1 nil :height 1.25)
   (set-face-attribute 'org-level-2 nil :height 1.15)
   (set-face-attribute 'org-level-3 nil :height 1.05))
@@ -503,6 +501,8 @@ With argument ARG, do this that many times."
 #+END_SRC
 
 * julia-snail
+
+  
 #+begin_src elisp
 ;; (use-package julia-snail
 ;;   :ensure t
@@ -514,29 +514,31 @@ With argument ARG, do this that many times."
 
 ;;(setq julia-snail-executable "/home/mason/julia/./julia")
 
-(defun julia-snail-copy-repl-region ()
-  "Copy the region (requires transient-mark) to the Julia REPL and evaluate it.
-This is not module-context aware."
-  (interactive)
-  (if (null (use-region-p))
-      (julia-snail-send-line)
-    (let* ((block-start (region-beginning))
-           (block-end (region-end))
-           (text (s-trim (buffer-substring-no-properties block-start block-end))))
-      (julia-snail--send-to-repl text)
-      (julia-snail--flash-region (point-at-bol) (point-at-eol)))))
+;; (defun julia-snail-copy-repl-region ()
+;;   "Copy the region (requires transient-mark) to the Julia REPL and evaluate it.
+;; This is not module-context aware."
+;;   (interactive)
+;;   (if (null (use-region-p))
+;;       (julia-snail-send-line)
+;;     (let* ((block-start (region-beginning))
+;;            (block-end (region-end))
+;;            (text (s-trim (buffer-substring-no-properties block-start block-end))))
+;;       (julia-snail--send-to-repl text)
+;;       (julia-snail--flash-region (point-at-bol) (point-at-eol)))))
 
 ;; (add-to-list 'load-path "~/.emacs.d/julia-snail/extensions/ob-julia")
 ;; (require 'ob-julia)
 
 
 
-(general-define-key
- :keymaps 'julia-snail-mode-map
- "C-c C-l" 'julia-snail-copy-repl-region)
+;; (general-define-key
+;;  :keymaps 'julia-snail-mode-map
+;;  "C-c C-l" 'julia-snail-copy-repl-region)
 
 
 #+end_src
+
+
 
 * Poly Org
 #+begin_src elisp
@@ -633,14 +635,3 @@ This is not module-context aware."
 
 #+END_SRC
 
-
-
-
-
-
-#+begin_src julia
-
-#+end_src
-
-#+RESULTS:
-: 2
