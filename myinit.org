@@ -388,14 +388,14 @@ With argument ARG, do this that many times."
 
 * emacs-jupyter
 #+BEGIN_SRC emacs-lisp
-;; (use-package popup
-;;   :ensure t)
-;; (use-package jupyter
-;;   :ensure t
-;;   :config
-;;   (require 'jupyter-julia)
-;;   (setq jupyter-eval-short-result-display-function 'popup-tip)
-;;   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
+(use-package popup
+  :ensure t)
+(use-package jupyter
+  :ensure t
+  :config
+  (require 'jupyter-julia)
+  (setq jupyter-eval-short-result-display-function 'popup-tip)
+  (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
 
 #+END_SRC
 
@@ -414,7 +414,7 @@ With argument ARG, do this that many times."
  'org-babel-load-languages
  '((emacs-lisp . t)
    (python . t)
-   ;; (jupyter . t)
+   (jupyter . t)
    ;; (julia-vterm . t)
    ))
 
@@ -428,13 +428,27 @@ With argument ARG, do this that many times."
 (add-to-list 'org-structure-template-alist
 			 '("el"  . "src elisp"))
 
-;; (org-babel-jupyter-override-src-block "julia")
+(org-babel-jupyter-override-src-block "julia")
 
-(setq org-babel-default-header-args:julia '(;; (:async . "yes")
-                                            ;; (:session . "vjl")
-											(:module . "Main")
-											(:wrap)
-											(:exports . "both")))
+;; (setq org-babel-default-header-args:julia '(;; (:async . "yes")
+;;                                             ;; (:session . "vjl")
+;; 											(:module . "Main")
+;; 											(:wrap)
+;; 											(:exports . "both")))
+
+(setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
+                                                    (:session . "jl")
+                                                    (:kernel . "julia-1.8")
+													(:exports . "both")
+													(:results . "scalar")))
+
+
+(setq org-babel-default-header-args:julia '((:async . "yes")
+                                                    (:session . "jl")
+                                                    (:kernel . "julia-1.8")
+													(:exports . "both")
+													(:results . "scalar")))
+
 
 ;; (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
 ;;                                                     (:session . "jl")
@@ -502,50 +516,16 @@ With argument ARG, do this that many times."
 
 * julia-snail
 
+
+#+begin_src elisp
+;; (add-to-list 'load-path "~/.emacs.d/julia-snail/")
+;; (require 'julia-snail)
+;; (add-hook 'julia-mode-hook #'julia-snail-mode)
+
+#+end_src
   
-#+begin_src elisp
-;; (use-package julia-snail
-;;   :ensure t
-;;   :hook (julia-mode . julia-snail-mode))
-
-(add-to-list 'load-path "~/.emacs.d/julia-snail/")
-(require 'julia-snail)
-(add-hook 'julia-mode-hook #'julia-snail-mode)
-
-;;(setq julia-snail-executable "/home/mason/julia/./julia")
-
-;; (defun julia-snail-copy-repl-region ()
-;;   "Copy the region (requires transient-mark) to the Julia REPL and evaluate it.
-;; This is not module-context aware."
-;;   (interactive)
-;;   (if (null (use-region-p))
-;;       (julia-snail-send-line)
-;;     (let* ((block-start (region-beginning))
-;;            (block-end (region-end))
-;;            (text (s-trim (buffer-substring-no-properties block-start block-end))))
-;;       (julia-snail--send-to-repl text)
-;;       (julia-snail--flash-region (point-at-bol) (point-at-eol)))))
-
-;; (add-to-list 'load-path "~/.emacs.d/julia-snail/extensions/ob-julia")
-;; (require 'ob-julia)
 
 
-
-;; (general-define-key
-;;  :keymaps 'julia-snail-mode-map
-;;  "C-c C-l" 'julia-snail-copy-repl-region)
-
-
-#+end_src
-
-
-
-* Poly Org
-#+begin_src elisp
-;; (use-package poly-org
-;;   :ensure t)
-
-#+end_src
 * HTMLize
 #+BEGIN_SRC emacs-lisp
 
@@ -635,3 +615,12 @@ With argument ARG, do this that many times."
 
 #+END_SRC
 
+
+
+#+begin_src elisp
+(let ((x nil))
+  (if x
+	  1))
+#+end_src
+
+#+RESULTS:
