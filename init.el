@@ -32,7 +32,7 @@
  '(org-startup-folded t)
  '(org-startup-truncated nil)
  '(package-selected-packages
-   '(julia-snail all-the-icons neotree ligature ligatures jupyter ob-async ob-julia-vterm julia-vterm quarto-mode quarto code-cells multi-vterm vterm smartparens smartparens-config autopair htmlize magit magit-popup auto-package-update fira-code-mode company-auctex auto-complete-auctex ac-capf quelpa-use-package quelpa zones fireplace auctex-latexmk company-tabnine julia-repl projectile company-lsp lsp-ui lsp-mode atom-one-dark-theme markdown-mode solarized-theme rainbow-delimiters ein slime isend-mode texfrag 2048-game multiple-cursors undo-tree 0xc pdf-tools use-package company auctex julia-mode general 0blayout which-key guide-key helm doom-themes))
+   '(jupyter all-the-icons neotree ligature ligatures ob-async ob-julia-vterm julia-vterm quarto-mode quarto code-cells multi-vterm vterm smartparens smartparens-config autopair htmlize magit magit-popup auto-package-update fira-code-mode company-auctex auto-complete-auctex ac-capf quelpa-use-package quelpa zones fireplace auctex-latexmk company-tabnine julia-repl projectile company-lsp lsp-ui lsp-mode atom-one-dark-theme markdown-mode solarized-theme rainbow-delimiters ein slime isend-mode texfrag 2048-game multiple-cursors undo-tree 0xc pdf-tools use-package company auctex general 0blayout which-key guide-key helm doom-themes))
  '(safe-local-variable-values
    '((org-confirm-babel-evaluate)
 	 (TeX-command-extra-options . "-shell-escape")
@@ -40,6 +40,7 @@
 		   (lambda nil
 			 (org-babel-tangle))
 		   nil t)))
+ '(shell-file-name "/bin/zsh")
  '(tab-width 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -326,19 +326,19 @@ With argument ARG, do this that many times."
 
   (add-hook 'TeX-after-compilation-finished-functions
 	    #'TeX-revert-document-buffer)
-  ;; to use pdfview with auctex
-  (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
-  (add-hook 'LaTeX-mode-hook #'toggle-word-wrap)
+  ;; ;; to use pdfview with auctex
+  ;; (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
+  ;; (add-hook 'LaTeX-mode-hook #'toggle-word-wrap)
 
-  ;; to use pdfview with auctex
-  (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
-	TeX-source-correlate-start-server t)
-  (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
+  ;; ;; to use pdfview with auctex
+  ;; (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
+  ;; 	TeX-source-correlate-start-server t)
+  ;; (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
 ;; (use-package company-auctex
 ;;   :ensure t)
 ;; (company-auctex-init)
-
+)
 #+END_SRC
 
 * julia-vterm
@@ -386,21 +386,57 @@ With argument ARG, do this that many times."
   :init (setq markdown-command "multimarkdown"))
 #+end_src
 
+* Julia
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/julia-emacs/")
+(require 'julia-mode)
+
+(use-package julia-repl
+  :ensure t
+  :init
+  (add-hook 'julia-mode-hook 'julia-repl-mode)
+  ;;(add-hook 'julia-mode-hook 'company-mode)
+  ;;(add-hook 'julia-mode-hook 'texfrag-mode)
+  (setq julia-repl-executable-records
+   '((default "~/julia/./julia")
+     (master  "~/build/julia/./julia")))
+
+  (setq julia-repl-switches "-O3")
+
+  (setenv "JULIA_NUM_THREADS" "6")
+  ;; (my-leader-def
+  ;;   :keymaps 'org-mode-map
+  ;;   "s"  'julia-repl-send-region-or-line)
+
+  ;; (my-leader-def
+  ;;   "s"  'julia-repl-send-region-or-line)
+)
+(julia-repl-set-terminal-backend 'vterm)
+
+;; (use-package julia-mode
+;;   :ensure t)
+
+#+END_SRC
+
+
 * emacs-jupyter
 
 #+BEGIN_SRC emacs-lisp
 (use-package popup
   :ensure t)
+;; (add-to-list 'load-path "~/.emacs.d/emacs-jupyter")
 (use-package jupyter
   :ensure t
   :config
   (require 'jupyter-julia)
   (setq jupyter-eval-short-result-display-function 'popup-tip)
   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
+
 #+END_SRC
 
   
-* Org 
+* Org
+
 
 #+BEGIN_SRC emacs-lisp
 
@@ -432,13 +468,13 @@ With argument ARG, do this that many times."
 
 
 (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
-                                                    (:kernel . "julia-1.8")
+                                                    (:kernel . "julia-1.9")
 													(:exports . "both")
 													(:results . "scalar")))
 
 
 (setq org-babel-default-header-args:julia '((:async . "yes")
-                                            (:kernel . "julia-1.8")
+                                            (:kernel . "julia-1.9")
 											(:exports . "both")
 											(:results . "scalar")))
 
@@ -453,6 +489,8 @@ With argument ARG, do this that many times."
 
 ;; display/update images in the buffer after I evaluate
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
+
 ;; Use Python3 on macos
 (when (memq window-system '(mac ns x))
   (progn (setenv "PATH" (concat "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages" ":" (getenv "PATH")))
@@ -477,6 +515,7 @@ With argument ARG, do this that many times."
 (add-hook 'org-mode-hook #'toggle-word-wrap)
 
 (defun org-babel-jupyter-handle-result-ansi-escapes ()
+  (interactive)
   "Handle ANSI escapes in Jupyter src-block result."
   (when (org-babel-jupyter-language-p "julia")
 	(save-excursion
@@ -497,33 +536,6 @@ With argument ARG, do this that many times."
   :defer t)
 
 #+END_SRC
-* Julia
-#+BEGIN_SRC emacs-lisp
-
-(use-package julia-repl
-  :ensure t
-  :init
-  (add-hook 'julia-mode-hook 'julia-repl-mode)
-  ;;(add-hook 'julia-mode-hook 'company-mode)
-  ;;(add-hook 'julia-mode-hook 'texfrag-mode)
-  (setq julia-repl-executable-records
-   '((default "~/julia/./julia")
-     (master  "~/build/julia/./julia")))
-
-  (setq julia-repl-switches "-O3")
-
-  (setenv "JULIA_NUM_THREADS" "6")
-  ;; (my-leader-def
-  ;;   :keymaps 'org-mode-map
-  ;;   "s"  'julia-repl-send-region-or-line)
-
-  ;; (my-leader-def
-  ;;   "s"  'julia-repl-send-region-or-line)
-)
-(julia-repl-set-terminal-backend 'vterm)
-
-#+END_SRC
-
 * julia-snail
 
 
@@ -532,10 +544,10 @@ With argument ARG, do this that many times."
 ;; (require 'julia-snail)
 ;; (add-hook 'julia-mode-hook #'julia-snail-mode)
 
-(use-package julia-snail
-  :ensure t
-  :config
-  (add-hook 'julia-mode-hook #'julia-snail-mode))
+;; (use-package julia-snail
+;;   :ensure t
+;;   :config
+;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
 
 ;; (defun julia-snail--show-globals ()
 ;;   (interactive)
@@ -623,8 +635,8 @@ With argument ARG, do this that many times."
 (add-to-list 'default-frame-alist
              '(font . "JuliaMono-11"))
 
-;; (set-fontset-font "fontset-default"  '(#xe000 . #xf8ff) "JuliaMono-11")
-;; (set-fontset-font "fontset-default" 'symbol "Noto Color Emoji")
+(set-fontset-font "fontset-default"  '(#xe000 . #xf8ff) "JuliaMono-11")
+(set-fontset-font "fontset-default" 'symbol "Noto Color Emoji")
 
 (setq mac-command-modifier 'control)
 
