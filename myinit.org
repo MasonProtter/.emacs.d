@@ -8,11 +8,13 @@
 (setq package-archives
       '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
         ("MELPA Stable" . "https://stable.melpa.org/packages/")
-        ("MELPA"        . "https://melpa.org/packages/"))
+        ("MELPA"        . "https://melpa.org/packages/")
+		("nongnu" . "https://elpa.nongnu.org/nongnu/"))
       package-archive-priorities
       '(("MELPA Stable" . 10)
         ("GNU ELPA"     . 5)
-        ("MELPA"        . 0)))
+        ("MELPA"        . 1)
+		("nongnu"       . 0)))
 
 (package-initialize)
 
@@ -23,6 +25,21 @@
 
 (eval-when-compile
   (require 'use-package))
+
+;; Boostrap `straight.el`
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 
 #+END_SRC
 * Paths
@@ -122,7 +139,8 @@
     :keymaps 'org-mode-map
     "q" 'org-fill-paragraph
     "cc" 'julia-repl-send-region-or-line
-    "cr" 'org-select-block-and-send-to-julia-repl))
+    "cr" 'org-select-block-and-send-to-julia-repl
+	"v" 'org-redisplay-inline-images))
 
 #+END_SRC
 ** Multiple-Cursors
@@ -434,7 +452,46 @@ With argument ARG, do this that many times."
 
 #+END_SRC
 
+
+
+* julia-snail
+
+
+
+#+begin_src elisp
+;; (add-to-list 'load-path "~/.emacs.d/julia-snail/")
+;; (require 'julia-snail)
+;; (add-hook 'julia-mode-hook #'julia-snail-mode)
+
+;; (use-package julia-snail
+;;   :ensure t
+;;   :config
+;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
+
+;; (defun julia-snail--show-globals ()
+;;   (interactive)
+;; 	(julia-snail--send-to-server (julia-snail--module-at-point) "names(@__MODULE__)"))
+
+;; display/update images in the buffer after I evaluate
+;; (add-hook 'julia-snail/ob-julia--around-ctrl-c-ctrl-c 'org-display-inline-images 'append)
+
+
+#+end_src
+
+#+RESULTS:
+| julia-snail-mode | julia-repl-mode |
   
+
+* Pluto.jl
+#+begin_src emacs-lisp
+(use-package plutojl-mode
+  :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
+
+#+end_src
+
+#+RESULTS:
+
+
 * Org
 
 
@@ -464,31 +521,24 @@ With argument ARG, do this that many times."
 (add-to-list 'org-structure-template-alist
 			 '("el"  . "src emacs-lisp"))
 
+(add-to-list 'org-structure-template-alist
+			 '("ll"  . "LaTeX latex"))
+
 (org-babel-jupyter-override-src-block "julia")
 
 
-(setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
-                                                    (:kernel . "julia-1.9")
-													(:exports . "both")
-													(:results . "scalar")))
-
-
-(setq org-babel-default-header-args:julia '((:async . "yes")
-                                            (:kernel . "julia-1.9")
-											(:exports . "both")
-											(:results . "scalar")))
-
-
-;; (setq org-babel-default-header-args:jupyter-julia '((:async . "yes")
-;;                                                     (:session . "jl")
-;;                                                     (:kernel . "julia-1.7")
-;; 													  (:exports . "both")
-;; 													  (:results . "scalar")))
+(let ((default-args '((:async . "yes")
+                      (:kernel . "julia-1.9")
+					  (:exports . "both")
+					  (:results . "scalar")
+					  (:display . "text/org image text/markdown text/latex text/plain")
+					  )
+		))
+  (setq org-babel-default-header-args:jupyter-julia default-args)
+  (setq org-babel-default-header-args:julia default-args))
 
 
 
-;; display/update images in the buffer after I evaluate
-(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
 
 ;; Use Python3 on macos
@@ -517,16 +567,52 @@ With argument ARG, do this that many times."
 (defun org-babel-jupyter-handle-result-ansi-escapes ()
   (interactive)
   "Handle ANSI escapes in Jupyter src-block result."
-  (when (org-babel-jupyter-language-p "julia")
+  (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
 	(save-excursion
 	  (goto-char (org-babel-where-is-src-block-result))
 	  (ansi-color-filter-region (point) (org-babel-result-end)))))
 
 (add-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
 
+
+;; display/update images in the buffer after I evaluate
+(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+;; (eval-after-load 'org
+;;   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
+
+
 #+END_SRC
 
+LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exporting-latex-commands-to-html-mathjax
 
+#+begin_src emacs-lisp
+(add-to-list 'org-src-lang-modes '("latex-macros" . latex))
+
+(defvar org-babel-default-header-args:latex-macros
+  '((:results . "raw")
+    (:exports . "results")))
+
+(defun prefix-all-lines (pre body)
+  (with-temp-buffer
+    (insert body)
+    (string-insert-rectangle (point-min) (point-max) pre)
+    (buffer-string)))
+
+(defun org-babel-execute:latex-macros (body _params)
+  (concat
+   (prefix-all-lines "#+LATEX_HEADER: " body)
+   "\n#+HTML_HEAD_EXTRA: <div style=\"display: none\"> \\(\n"
+   (prefix-all-lines "#+HTML_HEAD_EXTRA: " body)
+   "\n#+HTML_HEAD_EXTRA: \\)</div>\n"))
+
+#+end_src
+
+#+RESULTS:
+: org-babel-execute:latex-macros
+
+#+begin_src emacs-lisp
+;; (remove-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
+#+end_src
 
 * HTMLize
 #+BEGIN_SRC emacs-lisp
@@ -536,26 +622,6 @@ With argument ARG, do this that many times."
   :defer t)
 
 #+END_SRC
-* julia-snail
-
-
-#+begin_src elisp
-;; (add-to-list 'load-path "~/.emacs.d/julia-snail/")
-;; (require 'julia-snail)
-;; (add-hook 'julia-mode-hook #'julia-snail-mode)
-
-;; (use-package julia-snail
-;;   :ensure t
-;;   :config
-;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
-
-;; (defun julia-snail--show-globals ()
-;;   (interactive)
-;; 	(julia-snail--send-to-server (julia-snail--module-at-point) "names(@__MODULE__)"))
-
-#+end_src
-  
-
 
 * Flyspell
 
@@ -610,6 +676,15 @@ With argument ARG, do this that many times."
 
 #+END_SRC
 
+* Eat
+
+#+begin_src emacs-lisp
+(use-package eat
+  :ensure t
+  :config
+  (setq eat-term-name "xterm-256color"))
+#+end_src
+
 * Misc
 
 #+BEGIN_SRC emacs-lisp
@@ -660,4 +735,5 @@ With argument ARG, do this that many times."
 
 
 #+END_SRC
+
 
