@@ -14,7 +14,7 @@
  '(enable-remote-dir-locals t)
  '(julia-indent-offset 4)
  '(julia-snail-executable "~/julia/./julia")
- '(julia-snail-extensions '(ob-julia))
+ '(julia-snail-extensions nil)
  '(julia-snail-multimedia-enable t)
  '(julia-snail-popup-display-eval-results nil)
  '(julia-snail-show-error-window nil)

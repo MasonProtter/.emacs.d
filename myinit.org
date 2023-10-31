@@ -40,8 +40,11 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-
 #+END_SRC
+
+#+RESULTS:
+: t
+
 * Paths
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell
@@ -51,6 +54,16 @@
   	(exec-path-from-shell-initialize)))
 #+END_SRC
 
+
+
+* Eat
+
+#+begin_src emacs-lisp
+(use-package eat
+  :ensure t
+  :config
+  (setq eat-term-name "xterm-256color"))
+#+end_src
 
 
 * Key Config
@@ -111,7 +124,9 @@
     "l"  'select-current-line
     "t"  'iterm-send-text
     "rq" 'remove-newlines-in-region
-	"j" 'julia-snail)
+	"j" 'julia-snail
+	;; "e" 'eat
+	)
 
   (my-leader-def 
     :keymaps 'LaTeX-mode-map
@@ -225,6 +240,7 @@ With argument ARG, do this that many times."
 * Helm
 #+BEGIN_SRC emacs-lisp
 (use-package helm
+  :straight t
   :ensure t)
 
 (use-package helm-config
@@ -240,12 +256,12 @@ With argument ARG, do this that many times."
 #+END_SRC
 * vterm
 #+begin_src elisp
-(use-package vterm
-    :ensure t)
-(setq vterm-kill-buffer-on-exit nil)
+;; (use-package vterm
+;;     :ensure t)
+;; (setq vterm-kill-buffer-on-exit nil)
 
-(use-package multi-vterm 
-  :ensure t)
+;; (use-package multi-vterm 
+;;   :ensure t)
 
 #+end_src
 
@@ -290,10 +306,6 @@ With argument ARG, do this that many times."
   :ensure t)
 #+END_SRC
 
-#+begin_src julia
-
-#+end_src
-
 * Magit
 #+BEGIN_SRC emacs-lisp
 (use-package magit
@@ -332,18 +344,26 @@ With argument ARG, do this that many times."
      (setq TeX-parse-self t)
      (setq TeX-save-query nil)
      (setq TeX-PDF-mode t)
-     (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+     ;; (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
      ;; (setq TeX-view-program-list
      ;; 	   '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
      (setq TeX-source-correlate-mode t)
-     (setq TeX-view-evince-keep-focus nil)))
+     (setq TeX-view-evince-keep-focus nil)
+	 )
+
+   ;; to use pdfview with auctex
+   ;; (setq TeX-view-program-selection  '((output-pdf "PDF Viewer")) 
+   ;; 		 TeX-source-correlate-start-server t)
+   ;; (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view")))
+
+   )
 
   ;; Update PDF buffers after successful LaTeX runs
   (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
-	    #'TeX-revert-document-buffer)
+			#'TeX-revert-document-buffer)
 
   (add-hook 'TeX-after-compilation-finished-functions
-	    #'TeX-revert-document-buffer)
+			#'TeX-revert-document-buffer)
   ;; ;; to use pdfview with auctex
   ;; (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
   ;; (add-hook 'LaTeX-mode-hook #'toggle-word-wrap)
@@ -353,11 +373,39 @@ With argument ARG, do this that many times."
   ;; 	TeX-source-correlate-start-server t)
   ;; (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
-;; (use-package company-auctex
-;;   :ensure t)
-;; (company-auctex-init)
-)
+  ;; (use-package company-auctex
+  ;;   :ensure t)
+  ;; (company-auctex-init)
+  )
 #+END_SRC
+
+
+* Okular
+#+begin_src emacs-lisp
+;; (setq TeX-view-program-list '(("Okular" "okular --unique %u")))
+
+;; (add-hook 'LaTeX-mode-hook #'(lambda ()
+;;                   (add-to-list 'TeX-expand-list
+;;                        '("%u" Okular-make-url))))
+
+;; (defun Okular-make-url () (concat
+;;                "file://"
+;;                (expand-file-name (funcall file (TeX-output-extension) t)
+;;                          (file-name-directory (TeX-master-file)))
+;;                "#src:"
+;;                (TeX-current-line)
+;;                (expand-file-name (TeX-master-directory))
+;;                "./"
+;;                (TeX-current-file-name-master-relative)))
+
+;; (setq TeX-view-program-selection '((output-pdf "Okular")))
+(setq TeX-source-correlate-mode t)
+(setq TeX-source-correlate-start-server t)
+(setq TeX-view-program-list (quote (("Okular" "okular --unique %o#src:%n%b"))))
+(setq TeX-view-program-selection (quote ((engine-omega "dvips and gv") (output-dvi "xdvi") (output-pdf "Okular") (output-html "xdg-open"))))
+
+#+end_src
+
 
 * julia-vterm
 #+begin_src elisp
@@ -406,8 +454,11 @@ With argument ARG, do this that many times."
 
 * Julia
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/julia-emacs/")
-(require 'julia-mode)
+(use-package julia-mode
+  :ensure t)
+
+;; (add-to-list 'load-path "~/.emacs.d/julia-emacs/")
+;; (require 'julia-mode)
 
 (use-package julia-repl
   :ensure t
@@ -429,7 +480,7 @@ With argument ARG, do this that many times."
   ;; (my-leader-def
   ;;   "s"  'julia-repl-send-region-or-line)
 )
-(julia-repl-set-terminal-backend 'vterm)
+;; (julia-repl-set-terminal-backend 'vterm)
 
 ;; (use-package julia-mode
 ;;   :ensure t)
@@ -442,13 +493,15 @@ With argument ARG, do this that many times."
 #+BEGIN_SRC emacs-lisp
 (use-package popup
   :ensure t)
-;; (add-to-list 'load-path "~/.emacs.d/emacs-jupyter")
+
 (use-package jupyter
   :ensure t
   :config
   (require 'jupyter-julia)
   (setq jupyter-eval-short-result-display-function 'popup-tip)
   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
+
+
 
 #+END_SRC
 
@@ -465,6 +518,7 @@ With argument ARG, do this that many times."
 
 ;; (use-package julia-snail
 ;;   :ensure t
+;;   :straight t
 ;;   :config
 ;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
 
@@ -478,9 +532,6 @@ With argument ARG, do this that many times."
 
 #+end_src
 
-#+RESULTS:
-| julia-snail-mode | julia-repl-mode |
-  
 
 * Pluto.jl
 #+begin_src emacs-lisp
@@ -511,6 +562,10 @@ With argument ARG, do this that many times."
    ;; (julia-vterm . t)
    ))
 
+
+
+(org-babel-jupyter-override-src-block "julia")
+
 (setq org-confirm-babel-evaluate nil)
 
 ;; Type C-c C-, to open the template options
@@ -524,9 +579,6 @@ With argument ARG, do this that many times."
 (add-to-list 'org-structure-template-alist
 			 '("ll"  . "LaTeX latex"))
 
-(org-babel-jupyter-override-src-block "julia")
-
-
 (let ((default-args '((:async . "yes")
                       (:kernel . "julia-1.9")
 					  (:exports . "both")
@@ -536,7 +588,6 @@ With argument ARG, do this that many times."
 		))
   (setq org-babel-default-header-args:jupyter-julia default-args)
   (setq org-babel-default-header-args:julia default-args))
-
 
 
 
@@ -564,19 +615,40 @@ With argument ARG, do this that many times."
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 (add-hook 'org-mode-hook #'toggle-word-wrap)
 
-(defun org-babel-jupyter-handle-result-ansi-escapes ()
+;; (defun org-babel-jupyter-handle-result-ansi-escapes ()
+;;   (interactive)
+;;   "Handle ANSI escapes in Jupyter src-block result."
+;;   (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
+;; 	(save-excursion
+;; 	  (goto-char (org-babel-where-is-src-block-result))
+;; 	  (ansi-color-filter-region (point) (org-babel-result-end)))))
+
+;; (defun org-babel-jupyter-handle-result-ansi-escapes ()
+;;   "Handle ANSI escapes in Jupyter src-block result."
+;;   ;; (org-babel-map-src-blocks nil
+;;   ;;   (when (org-babel-jupyter-language-p lang)
+;;   ;;     (goto-char (org-babel-where-is-src-block-result))
+;;   ;;     (ansi-color-apply-on-region (point) (org-babel-result-end))))
+;;   (org-babel-jupyter-strip-ansi-escapes 'julia)
+;;   )
+
+
+;; (add-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
+
+;; (remove-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
+
+(require 'ansi-color)
+(defun display-ansi-colors ()
   (interactive)
-  "Handle ANSI escapes in Jupyter src-block result."
-  (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
-	(save-excursion
-	  (goto-char (org-babel-where-is-src-block-result))
-	  (ansi-color-filter-region (point) (org-babel-result-end)))))
+  (ansi-color-apply-on-region (point-min) (point-max)))
 
-(add-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
 
+(add-hook 'org-babel-after-execute-hook ;; #'display-ansi-colors
+    #'(lambda () (run-with-timer 0.1 nil #'display-ansi-colors)))
 
 ;; display/update images in the buffer after I evaluate
-(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+(add-hook 'org-babel-after-execute-hook
+		  #'(lambda () (run-with-timer 0.1 nil #'org-redisplay-inline-images)))
 ;; (eval-after-load 'org
 ;;   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
 
@@ -676,14 +748,6 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
 
 #+END_SRC
 
-* Eat
-
-#+begin_src emacs-lisp
-(use-package eat
-  :ensure t
-  :config
-  (setq eat-term-name "xterm-256color"))
-#+end_src
 
 * Misc
 
@@ -735,5 +799,7 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
 
 
 #+END_SRC
+
+
 
 
