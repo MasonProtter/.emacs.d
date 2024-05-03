@@ -1,5 +1,6 @@
 #+STARTUP: overview
 
+
 * Repos
 #+BEGIN_SRC emacs-lisp
 (require 'package)
@@ -53,6 +54,8 @@
     (when (memq window-system '(mac ns x))
   	(exec-path-from-shell-initialize)))
 #+END_SRC
+
+
 
 
 
@@ -241,9 +244,7 @@ With argument ARG, do this that many times."
 #+BEGIN_SRC emacs-lisp
 (use-package helm
   :straight t
-  :ensure t)
-
-(use-package helm-config
+  :ensure t
   :init
   (general-define-key 
    "M-x" #'helm-M-x
@@ -254,6 +255,7 @@ With argument ARG, do this that many times."
 
 
 #+END_SRC
+
 * vterm
 #+begin_src elisp
 ;; (use-package vterm
@@ -364,6 +366,10 @@ With argument ARG, do this that many times."
 
   (add-hook 'TeX-after-compilation-finished-functions
 			#'TeX-revert-document-buffer)
+
+
+
+  
   ;; ;; to use pdfview with auctex
   ;; (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
   ;; (add-hook 'LaTeX-mode-hook #'toggle-word-wrap)
@@ -439,9 +445,8 @@ With argument ARG, do this that many times."
 * Quarto
 
 #+begin_src elisp
-;; (use-package quarto-mode
-;;   :ensure t
-;;   )
+(use-package quarto-mode
+  :ensure t)
 #+end_src
 
 * Markdown
@@ -455,31 +460,38 @@ With argument ARG, do this that many times."
 * Julia
 #+BEGIN_SRC emacs-lisp
 (use-package julia-mode
-  :ensure t)
+  :straight '(julia-mode :type git :host github :repo "tpapp/julia-emacs" :branch "tp/repl-style-completion")
+  :init
+  (general-define-key
+   :keymaps 'julia-mode-map
+   ;; see https://github.com/JuliaEditorSupport/julia-emacs/pull/196
+   ;; "TAB" 'julia-latexsub-or-indent
+   )
+  )
 
-;; (add-to-list 'load-path "~/.emacs.d/julia-emacs/")
-;; (require 'julia-mode)
+
 
 (use-package julia-repl
+  :straight '(julia-repl :type git :host github :repo "duzaichuan/julia-repl" :branch "master")
   :ensure t
   :init
   (add-hook 'julia-mode-hook 'julia-repl-mode)
   ;;(add-hook 'julia-mode-hook 'company-mode)
   ;;(add-hook 'julia-mode-hook 'texfrag-mode)
   (setq julia-repl-executable-records
-   '((default "~/julia/./julia")
-     (master  "~/build/julia/./julia")))
+		'((default "julia")))
 
-  (setq julia-repl-switches "-O3")
-
+  ;;   (setq julia-repl-switches "-O3")
   (setenv "JULIA_NUM_THREADS" "6")
   ;; (my-leader-def
   ;;   :keymaps 'org-mode-map
   ;;   "s"  'julia-repl-send-region-or-line)
 
-  ;; (my-leader-def
-  ;;   "s"  'julia-repl-send-region-or-line)
-)
+  (my-leader-def
+    "s"  'julia-repl-send-region-or-line)
+  )
+(julia-repl-set-terminal-backend 'eat)
+
 ;; (julia-repl-set-terminal-backend 'vterm)
 
 ;; (use-package julia-mode
@@ -487,19 +499,30 @@ With argument ARG, do this that many times."
 
 #+END_SRC
 
+#+RESULTS:
+
+
+#+begin_src julia :session foo
+
+#+end_src
+
+#+RESULTS:
+: 2
 
 * emacs-jupyter
 
 #+BEGIN_SRC emacs-lisp
-(use-package popup
-  :ensure t)
+  (use-package popup
+    :ensure t)
 
-(use-package jupyter
-  :ensure t
-  :config
-  (require 'jupyter-julia)
-  (setq jupyter-eval-short-result-display-function 'popup-tip)
-  (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable))
+  (use-package jupyter
+    :ensure t
+    ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
+    :config
+    (require 'jupyter-julia)
+    ;; (setq jupyter-eval-short-result-display-function 'popup-tip)
+    ;; (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
+    )
 
 
 
@@ -512,19 +535,32 @@ With argument ARG, do this that many times."
 
 
 #+begin_src elisp
-;; (add-to-list 'load-path "~/.emacs.d/julia-snail/")
-;; (require 'julia-snail)
+;; (straight-use-package 'julia-snail)
+
+;; (setq julia-snail-executable "~/julia-1.10/./julia")
 ;; (add-hook 'julia-mode-hook #'julia-snail-mode)
 
 ;; (use-package julia-snail
-;;   :ensure t
+;;   ;; :ensure t
 ;;   :straight t
-;;   :config
-;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
+;;   :custom
+;; (julia-snail-terminal-type :eat)
+;; (julia-snail-executable "~/julia-1.10/./julia")
+;; (julia-snail-extensions '(ob-julia))
+;; (julia-snail-multimedia-enable t)
+;; (julia-snail-popup-display-eval-results nil)
+;; (julia-snail-show-error-window nil)
+;; (julia-snail/ob-julia-capture-io t)
+;; (julia-snail/ob-julia-mirror-output-in-repl t)
+;; (julia-snail/ob-julia-use-error-pane nil)
+;; :config
+;; (add-hook 'julia-mode-hook #'julia-snail-mode))
+
 
 ;; (defun julia-snail--show-globals ()
 ;;   (interactive)
 ;; 	(julia-snail--send-to-server (julia-snail--module-at-point) "names(@__MODULE__)"))
+
 
 ;; display/update images in the buffer after I evaluate
 ;; (add-hook 'julia-snail/ob-julia--around-ctrl-c-ctrl-c 'org-display-inline-images 'append)
@@ -535,8 +571,8 @@ With argument ARG, do this that many times."
 
 * Pluto.jl
 #+begin_src emacs-lisp
-(use-package plutojl-mode
-  :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
+;; (use-package plutojl-mode
+;;   :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
 
 #+end_src
 
@@ -559,12 +595,12 @@ With argument ARG, do this that many times."
  '((emacs-lisp . t)
    (python . t)
    (jupyter . t)
+   (julia . t)
    ;; (julia-vterm . t)
    ))
+;; (org-babel-jupyter-override-src-block "julia")
 
 
-
-(org-babel-jupyter-override-src-block "julia")
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -580,14 +616,13 @@ With argument ARG, do this that many times."
 			 '("ll"  . "LaTeX latex"))
 
 (let ((default-args '((:async . "yes")
-                      (:kernel . "julia-1.9")
+                      (:kernel . "julia-1.10")
 					  (:exports . "both")
 					  (:results . "scalar")
-					  (:display . "text/org image text/markdown text/latex text/plain")
-					  )
-		))
+					  (:display . "text/org image text/markdown text/latex text/plain"))))
   (setq org-babel-default-header-args:jupyter-julia default-args)
-  (setq org-babel-default-header-args:julia default-args))
+  ;; (setq org-babel-default-header-args:julia default-args)
+  )
 
 
 
@@ -612,16 +647,16 @@ With argument ARG, do this that many times."
   (set-face-attribute 'org-level-2 nil :height 1.15)
   (set-face-attribute 'org-level-3 nil :height 1.05))
 (add-hook 'org-load-hook #'my/org-mode-hook)
-(add-hook 'org-mode-hook 'my/org-mode-hook)
+(add-hook 'org-mode-hook #'my/org-mode-hook)
 (add-hook 'org-mode-hook #'toggle-word-wrap)
 
-;; (defun org-babel-jupyter-handle-result-ansi-escapes ()
-;;   (interactive)
-;;   "Handle ANSI escapes in Jupyter src-block result."
-;;   (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
-;; 	(save-excursion
-;; 	  (goto-char (org-babel-where-is-src-block-result))
-;; 	  (ansi-color-filter-region (point) (org-babel-result-end)))))
+(defun org-babel-jupyter-handle-result-ansi-escapes ()
+  (interactive)
+  "Handle ANSI escapes in Jupyter src-block result."
+  (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
+	(save-excursion
+	  (goto-char (org-babel-where-is-src-block-result))
+	  (ansi-color-filter-region (point) (org-babel-result-end)))))
 
 ;; (defun org-babel-jupyter-handle-result-ansi-escapes ()
 ;;   "Handle ANSI escapes in Jupyter src-block result."
@@ -632,23 +667,34 @@ With argument ARG, do this that many times."
 ;;   (org-babel-jupyter-strip-ansi-escapes 'julia)
 ;;   )
 
+;; (add-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
 
 ;; (add-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
 
 ;; (remove-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
 
-(require 'ansi-color)
-(defun display-ansi-colors ()
-  (interactive)
-  (ansi-color-apply-on-region (point-min) (point-max)))
+;; (require 'ansi-color)
+;; (defun display-ansi-colors ()
+;;   (interactive)
+;;   (ansi-color-apply-on-region (point-min) (point-max)))
 
 
-(add-hook 'org-babel-after-execute-hook ;; #'display-ansi-colors
-    #'(lambda () (run-with-timer 0.1 nil #'display-ansi-colors)))
+;; (add-hook 'org-babel-after-execute-hook 'display-ansi-colors)
+;; #'(lambda () (run-with-timer 0.1 nil #'display-ansi-colors)))
 
 ;; display/update images in the buffer after I evaluate
-(add-hook 'org-babel-after-execute-hook
-		  #'(lambda () (run-with-timer 0.1 nil #'org-redisplay-inline-images)))
+(add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+
+
+
+;; (setq warning-suppress-types
+;; 	  (append warning-suppress-types '((org-element-cache))))
+
+
+
+;; display/update images in the buffer after I evaluate
+;; (add-hook 'org-babel-after-execute-hook
+;; 		  #'(lambda () (run-with-timer 0.1 nil #'org-redisplay-inline-images)))
 ;; (eval-after-load 'org
 ;;   (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images))
 
@@ -748,6 +794,12 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
 
 #+END_SRC
 
+* Nix
+#+begin_src elisp
+(use-package nix-mode
+  :mode "\\.nix\\'"
+  :ensure t)
+#+end_src
 
 * Misc
 
@@ -799,7 +851,3 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
 
 
 #+END_SRC
-
-
-
-
