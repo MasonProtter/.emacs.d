@@ -598,8 +598,7 @@ With argument ARG, do this that many times."
    (julia . t)
    ;; (julia-vterm . t)
    ))
-;; (org-babel-jupyter-override-src-block "julia")
-
+(org-babel-jupyter-override-src-block "julia")
 
 
 (setq org-confirm-babel-evaluate nil)
@@ -621,7 +620,7 @@ With argument ARG, do this that many times."
 					  (:results . "scalar")
 					  (:display . "text/org image text/markdown text/latex text/plain"))))
   (setq org-babel-default-header-args:jupyter-julia default-args)
-  ;; (setq org-babel-default-header-args:julia default-args)
+  (setq org-babel-default-header-args:julia default-args)
   )
 
 
