@@ -459,43 +459,43 @@ With argument ARG, do this that many times."
 
 * Julia
 #+BEGIN_SRC emacs-lisp
-(use-package julia-mode
-  :straight '(julia-mode :type git :host github :repo "tpapp/julia-emacs" :branch "tp/repl-style-completion")
-  :init
-  (general-define-key
-   :keymaps 'julia-mode-map
-   ;; see https://github.com/JuliaEditorSupport/julia-emacs/pull/196
-   ;; "TAB" 'julia-latexsub-or-indent
-   )
-  )
+  (use-package julia-mode
+    :straight '(julia-mode)
+    :init
+    (general-define-key
+     :keymaps 'julia-mode-map
+     ;; see https://github.com/JuliaEditorSupport/julia-emacs/pull/196
+     "TAB" 'julia-latexsub-or-indent
+     )
+    )
 
 
 
-(use-package julia-repl
-  :straight '(julia-repl :type git :host github :repo "duzaichuan/julia-repl" :branch "master")
-  :ensure t
-  :init
-  (add-hook 'julia-mode-hook 'julia-repl-mode)
-  ;;(add-hook 'julia-mode-hook 'company-mode)
-  ;;(add-hook 'julia-mode-hook 'texfrag-mode)
-  (setq julia-repl-executable-records
-		'((default "julia")))
+  (use-package julia-repl
+    :straight '(julia-repl :type git :host github :repo "duzaichuan/julia-repl" :branch "master")
+    :ensure t
+    :init
+    (add-hook 'julia-mode-hook 'julia-repl-mode)
+    ;;(add-hook 'julia-mode-hook 'company-mode)
+    ;;(add-hook 'julia-mode-hook 'texfrag-mode)
+    (setq julia-repl-executable-records
+		  '((default "julia")))
 
-  ;;   (setq julia-repl-switches "-O3")
-  (setenv "JULIA_NUM_THREADS" "6")
-  ;; (my-leader-def
-  ;;   :keymaps 'org-mode-map
-  ;;   "s"  'julia-repl-send-region-or-line)
+    ;;   (setq julia-repl-switches "-O3")
+    (setenv "JULIA_NUM_THREADS" "6")
+    ;; (my-leader-def
+    ;;   :keymaps 'org-mode-map
+    ;;   "s"  'julia-repl-send-region-or-line)
 
-  (my-leader-def
-    "s"  'julia-repl-send-region-or-line)
-  )
-(julia-repl-set-terminal-backend 'eat)
+    (my-leader-def
+      "s"  'julia-repl-send-region-or-line)
+    )
+  (julia-repl-set-terminal-backend 'eat)
 
-;; (julia-repl-set-terminal-backend 'vterm)
+  ;; (julia-repl-set-terminal-backend 'vterm)
 
-;; (use-package julia-mode
-;;   :ensure t)
+  ;; (use-package julia-mode
+  ;;   :ensure t)
 
 #+END_SRC
 
