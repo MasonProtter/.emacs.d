@@ -512,17 +512,17 @@ With argument ARG, do this that many times."
 * emacs-jupyter
 
 #+BEGIN_SRC emacs-lisp
-  (use-package popup
-    :ensure t)
+(use-package popup
+  :ensure t)
 
-  (use-package jupyter
-    :ensure t
-    ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
-    :config
-    (require 'jupyter-julia)
-    ;; (setq jupyter-eval-short-result-display-function 'popup-tip)
-    ;; (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
-    )
+(use-package jupyter
+  :ensure t
+  ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
+  :config
+  (require 'jupyter-julia)
+  ;; (setq jupyter-eval-short-result-display-function 'popup-tip)
+  ;; (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
+  )
 
 
 
