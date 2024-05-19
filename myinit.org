@@ -127,7 +127,7 @@
     "l"  'select-current-line
     "t"  'iterm-send-text
     "rq" 'remove-newlines-in-region
-	"j" 'julia-snail
+	;; "j" 'julia-snail
 	;; "e" 'eat
 	)
 
@@ -415,10 +415,10 @@ With argument ARG, do this that many times."
 
 * julia-vterm
 #+begin_src elisp
-;; (use-package julia-vterm
-;;   :ensure t)
-;; (use-package ob-julia-vterm
-;;   :ensure t)
+(use-package julia-vterm
+  :ensure t)
+(use-package ob-julia-vterm
+  :ensure t)
 ;; #(package-install-file ".emacs.d/ob-julia-vterm.el/ob-julia-vterm.el")
 
 ;; (setq julia-vterm-repl-program "~/julia/./julia")
@@ -459,70 +459,61 @@ With argument ARG, do this that many times."
 
 * Julia
 #+BEGIN_SRC emacs-lisp
-  (use-package julia-mode
-    :straight '(julia-mode)
-    :init
-    (general-define-key
-     :keymaps 'julia-mode-map
-     ;; see https://github.com/JuliaEditorSupport/julia-emacs/pull/196
-     "TAB" 'julia-latexsub-or-indent
-     )
-    )
+(use-package julia-mode
+  :straight '(julia-mode)
+  :init
+  (general-define-key
+   :keymaps 'julia-mode-map
+   ;; see https://github.com/JuliaEditorSupport/julia-emacs/pull/196
+   "TAB" 'julia-latexsub-or-indent
+   )
+  )
 
+(use-package julia-repl
+  :straight '(julia-repl :type git :host github :repo "duzaichuan/julia-repl" :branch "master")
+  :ensure t
+  :init
+  (add-hook 'julia-mode-hook 'julia-repl-mode)
+  ;;(add-hook 'julia-mode-hook 'company-mode)
+  ;;(add-hook 'julia-mode-hook 'texfrag-mode)
+  (setq julia-repl-executable-records
+		'((default "julia")))
 
+  ;;   (setq julia-repl-switches "-O3")
+  (setenv "JULIA_NUM_THREADS" "6")
+  ;; (my-leader-def
+  ;;   :keymaps 'org-mode-map
+  ;;   "s"  'julia-repl-send-region-or-line)
 
-  (use-package julia-repl
-    :straight '(julia-repl :type git :host github :repo "duzaichuan/julia-repl" :branch "master")
-    :ensure t
-    :init
-    (add-hook 'julia-mode-hook 'julia-repl-mode)
-    ;;(add-hook 'julia-mode-hook 'company-mode)
-    ;;(add-hook 'julia-mode-hook 'texfrag-mode)
-    (setq julia-repl-executable-records
-		  '((default "julia")))
+  (my-leader-def
+    "s"  'julia-repl-send-region-or-line)
+  )
+(julia-repl-set-terminal-backend 'eat)
 
-    ;;   (setq julia-repl-switches "-O3")
-    (setenv "JULIA_NUM_THREADS" "6")
-    ;; (my-leader-def
-    ;;   :keymaps 'org-mode-map
-    ;;   "s"  'julia-repl-send-region-or-line)
+;; (julia-repl-set-terminal-backend 'vterm)
 
-    (my-leader-def
-      "s"  'julia-repl-send-region-or-line)
-    )
-  (julia-repl-set-terminal-backend 'eat)
-
-  ;; (julia-repl-set-terminal-backend 'vterm)
-
-  ;; (use-package julia-mode
-  ;;   :ensure t)
+;; (use-package julia-mode
+;;   :ensure t)
 
 #+END_SRC
 
 #+RESULTS:
 
-
-#+begin_src julia :session foo
-
-#+end_src
-
-#+RESULTS:
-: 2
-
 * emacs-jupyter
 
 #+BEGIN_SRC emacs-lisp
-  (use-package popup
-    :ensure t)
+;; (use-package popup
+;;   :ensure t)
 
-  (use-package jupyter
-    :ensure t
-    ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
-    :config
-    (require 'jupyter-julia)
-    ;; (setq jupyter-eval-short-result-display-function 'popup-tip)
-    ;; (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
-    )
+;; (use-package jupyter
+;;   :ensure t
+;;   :straight t
+;;   ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
+;;   :config
+;;   (require 'jupyter-julia)
+;;   ;; (setq jupyter-eval-short-result-display-function 'popup-tip)
+;;   ;; (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
+;;   )
 
 
 
@@ -594,11 +585,14 @@ With argument ARG, do this that many times."
  'org-babel-load-languages
  '((emacs-lisp . t)
    (python . t)
-   (jupyter . t)
+   ;; (jupyter . t)
    (julia . t)
-   ;; (julia-vterm . t)
+   (julia-vterm . t)
    ))
-(org-babel-jupyter-override-src-block "julia")
+;; (org-babel-jupyter-override-src-block "julia")
+(defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
+(defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
+
 
 
 (setq org-confirm-babel-evaluate nil)
@@ -606,6 +600,8 @@ With argument ARG, do this that many times."
 ;; Type C-c C-, to open the template options
 ;; (add-to-list 'org-structure-template-alist
 ;; 	       '("jj"  . "src jupyter-julia"))
+
+
 (add-to-list 'org-structure-template-alist
 			 '("j"  . "src julia"))
 (add-to-list 'org-structure-template-alist
@@ -614,14 +610,14 @@ With argument ARG, do this that many times."
 (add-to-list 'org-structure-template-alist
 			 '("ll"  . "LaTeX latex"))
 
-(let ((default-args '((:async . "yes")
-                      (:kernel . "julia-1.10")
-					  (:exports . "both")
-					  (:results . "scalar")
-					  (:display . "text/org image text/markdown text/latex text/plain"))))
-  (setq org-babel-default-header-args:jupyter-julia default-args)
-  (setq org-babel-default-header-args:julia default-args)
-  )
+;; (let ((default-args '((:async . "yes")
+;;                       (:kernel . "julia-1.10")
+;; 					  (:exports . "both")
+;; 					  (:results . "scalar")
+;; 					  (:display . "text/org image text/markdown text/latex text/plain"))))
+;;   (setq org-babel-default-header-args:jupyter-julia default-args)
+;;   (setq org-babel-default-header-args:julia default-args)
+;;   )
 
 
 
@@ -728,7 +724,29 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
 : org-babel-execute:latex-macros
 
 #+begin_src emacs-lisp
-;; (remove-hook 'org-babel-after-execute-hook #'org-babel-jupyter-handle-result-ansi-escapes)
+(require 'ox)
+(defun org-html-export-to-mhtml-and-open (async subtree visible body)
+  (cl-letf (((symbol-function 'org-html--format-image) 'format-image-inline))
+    (org-open-file (org-html-export-to-html nil subtree visible body))))
+
+(defun org-html-export-to-mhtml (async subtree visible body)
+  (cl-letf (((symbol-function 'org-html--format-image) 'format-image-inline))
+    (org-html-export-to-html nil subtree visible body)))
+
+(defun format-image-inline (source attributes info)
+  (let* ((ext (file-name-extension source))
+         (prefix (if (string= "svg" ext) "data:image/svg+xml;base64," "data:;base64,"))
+         (data (with-temp-buffer (url-insert-file-contents source) (buffer-string)))
+         (data-url (concat prefix (base64-encode-string data)))
+         (attributes (org-combine-plists `(:src ,data-url) attributes)))
+    (org-html-close-tag "img" (org-html--make-attribute-string attributes) info)))
+
+(org-export-define-derived-backend 'html-inline-images 'html
+				   :menu-entry '(?h "Export to HTML" ((?m "As MHTML file" org-html-export-to-mhtml)
+								      (?M "As MHTML file and open" org-html-export-to-mhtml-and-open))))
+
+
+
 #+end_src
 
 * HTMLize
