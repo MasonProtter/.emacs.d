@@ -25,6 +25,7 @@
  '(julia-snail/ob-julia-capture-io t)
  '(julia-snail/ob-julia-mirror-output-in-repl t)
  '(julia-snail/ob-julia-use-error-pane nil)
+ '(jupyter-executable "jupyter")
  '(ns-alternate-modifier '(:ordinary meta :function meta :mouse meta))
  '(ns-command-modifier 'super)
  '(org-file-apps
