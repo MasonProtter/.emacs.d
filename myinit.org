@@ -591,8 +591,8 @@ With argument ARG, do this that many times."
 
 * Pluto.jl
 #+begin_src emacs-lisp
-;; (use-package plutojl-mode
-;;   :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
+(use-package plutojl-mode
+  :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
 
 #+end_src
 
