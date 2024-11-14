@@ -426,10 +426,10 @@ With argument ARG, do this that many times."
 
 * julia-vterm
 #+begin_src elisp
-(use-package julia-vterm
-  :ensure t)
-(use-package ob-julia-vterm
-  :ensure t)
+;; (use-package julia-vterm
+;;   :ensure t)
+;; (use-package ob-julia-vterm
+;;   :ensure t)
 ;; #(package-install-file ".emacs.d/ob-julia-vterm.el/ob-julia-vterm.el")
 
 ;; (setq julia-vterm-repl-program "~/julia/./julia")
@@ -513,20 +513,33 @@ With argument ARG, do this that many times."
 * emacs-jupyter
 
 #+BEGIN_SRC emacs-lisp
-;; (use-package popup
-;;   :ensure t)
+(use-package popup
+  :ensure t)
 
-;; (use-package jupyter
-;;   :ensure t
-;;   :straight t
-;;   ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
-;;   :config
-;;   (require 'jupyter-julia)
-;;   ;; (setq jupyter-eval-short-result-display-function 'popup-tip)
-;;   ;; (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
-;;   )
+(use-package jupyter
+  :ensure t
+  ;; :straight t
+  ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
+  :config
+  (require 'jupyter-julia)
+  (setq jupyter-eval-short-result-display-function 'popup-tip)
+  (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
+  ;; (setq jupyter-use-zmq nil)
+  
+  )
 
 
+;; (defun my-jupyter-api-http-request--ignore-login-error-a
+;;     (func url endpoint method &rest data)
+;;   (cond
+;;    ((member endpoint '("login"))
+;;     (ignore-error (jupyter-api-http-error)
+;;       (apply func url endpoint method data)))
+;;    (:else
+;;     (apply func url endpoint method data))))
+;; (advice-add
+;;  #'jupyter-api-http-request
+;;  :around #'my-jupyter-api-http-request--ignore-login-error-a)
 
 #+END_SRC
 
@@ -546,17 +559,17 @@ With argument ARG, do this that many times."
 ;;   ;; :ensure t
 ;;   :straight t
 ;;   :custom
-;; (julia-snail-terminal-type :eat)
-;; (julia-snail-executable "~/julia-1.10/./julia")
-;; (julia-snail-extensions '(ob-julia))
-;; (julia-snail-multimedia-enable t)
-;; (julia-snail-popup-display-eval-results nil)
-;; (julia-snail-show-error-window nil)
-;; (julia-snail/ob-julia-capture-io t)
-;; (julia-snail/ob-julia-mirror-output-in-repl t)
-;; (julia-snail/ob-julia-use-error-pane nil)
-;; :config
-;; (add-hook 'julia-mode-hook #'julia-snail-mode))
+;;   (julia-snail-terminal-type :eat)
+;;   (julia-snail-executable "julia")
+;;   ;; (julia-snail-extensions '(ob-julia))
+;;   (julia-snail-multimedia-enable t)
+;;   (julia-snail-popup-display-eval-results nil)
+;;   (julia-snail-show-error-window nil)
+;;   ;; (julia-snail/ob-julia-capture-io t)
+;;   ;; (julia-snail/ob-julia-mirror-output-in-repl t)
+;;   ;; (julia-snail/ob-julia-use-error-pane nil)
+;;   :config
+;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
 
 
 ;; (defun julia-snail--show-globals ()
@@ -571,10 +584,26 @@ With argument ARG, do this that many times."
 #+end_src
 
 
+* Ob-julia
+
+#+begin_src emacs-lisp
+;; (straight-use-package
+;;  '(ob-julia :type git :host github :repo "karthink/ob-julia"))
+
+
+;; (add-to-list 'load-path "~/.emacs.d/ob-julia/ob-julia-snail.el")
+;; (add-to-list 'load-path "~/.emacs.d/ob-julia/")
+;; (require 'ob-julia)
+;; (customize-set-variable 'org-babel-julia-backend 'julia-snail)
+
+
+#+end_src
+
+
 * Pluto.jl
 #+begin_src emacs-lisp
-;; (use-package plutojl-mode
-;;   :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
+(use-package plutojl-mode
+  :straight (plutojl-mode :type git :host github :repo "torfjelde/plutojl-mode.el"))
 
 #+end_src
 
@@ -596,13 +625,15 @@ With argument ARG, do this that many times."
  'org-babel-load-languages
  '((emacs-lisp . t)
    (python . t)
-   ;; (jupyter . t)
+   (jupyter . t)
    (julia . t)
-   (julia-vterm . t)
+   (shell . t)
+   (eshell . t)
+   ;; (julia-vterm . t)
    ))
-;; (org-babel-jupyter-override-src-block "julia")
-(defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
-(defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
+(org-babel-jupyter-override-src-block "julia")
+;; (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
+;; (defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
 
 
 
@@ -621,14 +652,14 @@ With argument ARG, do this that many times."
 (add-to-list 'org-structure-template-alist
 			 '("ll"  . "LaTeX latex"))
 
-;; (let ((default-args '((:async . "yes")
-;;                       (:kernel . "julia-1.10")
-;; 					  (:exports . "both")
-;; 					  (:results . "scalar")
-;; 					  (:display . "text/org image text/markdown text/latex text/plain"))))
-;;   (setq org-babel-default-header-args:jupyter-julia default-args)
-;;   (setq org-babel-default-header-args:julia default-args)
-;;   )
+(let ((default-args '((:async . "yes")
+                      (:kernel . "julia-1.11")
+					  (:exports . "both")
+					  (:results . "scalar")
+					  (:display . "text/org image text/markdown text/latex text/plain"))))
+  (setq org-babel-default-header-args:jupyter-julia default-args)
+  (setq org-babel-default-header-args:julia default-args)
+  )
 
 
 
@@ -656,13 +687,13 @@ With argument ARG, do this that many times."
 (add-hook 'org-mode-hook #'my/org-mode-hook)
 (add-hook 'org-mode-hook #'toggle-word-wrap)
 
-(defun org-babel-jupyter-handle-result-ansi-escapes ()
-  (interactive)
-  "Handle ANSI escapes in Jupyter src-block result."
-  (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
-	(save-excursion
-	  (goto-char (org-babel-where-is-src-block-result))
-	  (ansi-color-filter-region (point) (org-babel-result-end)))))
+;; (defun org-babel-jupyter-handle-result-ansi-escapes ()
+;;   (interactive)
+;;   "Handle ANSI escapes in Jupyter src-block result."
+;;   (when (and (org-babel-jupyter-language-p "julia") (org-babel-where-is-src-block-result))
+;; 	(save-excursion
+;; 	  (goto-char (org-babel-where-is-src-block-result))
+;; 	  (ansi-color-filter-region (point) (org-babel-result-end)))))
 
 ;; (defun org-babel-jupyter-handle-result-ansi-escapes ()
 ;;   "Handle ANSI escapes in Jupyter src-block result."
