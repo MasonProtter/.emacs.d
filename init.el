@@ -56,6 +56,7 @@
 		   nil t)))
  '(shell-file-name "/bin/zsh")
  '(tab-width 4)
+ '(typst-ts-mode-indent-offset 2)
  '(warning-suppress-types '((org-element-cache))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -59,6 +59,17 @@
 
 
 
+* Treesit-auto
+
+#+begin_src emacs-lisp
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (global-treesit-auto-mode))
+#+end_src
+
 * Eat
 
 #+begin_src emacs-lisp
@@ -817,6 +828,20 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
   :mode "\\.nix\\'"
   :ensure t)
 #+end_src
+
+* Typst
+
+#+begin_src elisp
+(use-package typst-ts-mode
+  :straight '(typst-ts-mode :type git :host sourcehut :repo "meow_king/typst-ts-mode"))
+
+(add-to-list 'treesit-language-source-alist
+             '(typst "https://github.com/uben0/tree-sitter-typst"))
+;; (treesit-install-language-grammar 'typst)
+
+#+end_src
+
+
 
 * Misc
 
