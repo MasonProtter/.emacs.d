@@ -73,10 +73,24 @@
 * Eat
 
 #+begin_src emacs-lisp
-(use-package eat
-  :ensure t
-  :config
-  (setq eat-term-name "xterm-256color"))
+;; (use-package eat
+;;   :ensure t
+;;   :config
+;;   (setq eat-term-name "xterm-256color"))
+
+
+(straight-use-package
+ '(eat :type git
+       :host codeberg
+       :repo "akib/emacs-eat"
+       :files ("*.el" ("term" "term/*.el") "*.texi"
+               "*.ti" ("terminfo/e" "terminfo/e/*")
+               ("terminfo/65" "terminfo/65/*")
+               ("integration" "integration/*")
+               (:exclude ".dir-locals.el" "*-tests.el"))))
+
+(setq eat-term-name "xterm-256color")
+
 #+end_src
 
 
@@ -456,8 +470,8 @@ With argument ARG, do this that many times."
 * Quarto
 
 #+begin_src elisp
-(use-package quarto-mode
-  :ensure t)
+;; (use-package quarto-mode
+;;   :ensure t)
 #+end_src
 
 * Markdown
@@ -607,7 +621,12 @@ With argument ARG, do this that many times."
 
 #+end_src
 
-#+RESULTS:
+** Ox-Pluto
+
+#+begin_src emacs-lisp
+(straight-use-package
+ '(ox-pluto :type git :host github :repo "tecosaur/ox-pluto"))
+#+end_src
 
 
 * Org
@@ -631,7 +650,7 @@ With argument ARG, do this that many times."
    (eshell . t)
    ;; (julia-vterm . t)
    ))
-(org-babel-jupyter-override-src-block "julia")
+;; (org-babel-jupyter-override-src-block "julia")
 ;; (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
 ;; (defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
 
@@ -863,11 +882,11 @@ LaTeX macros in HTML export: https://emacs.stackexchange.com/questions/54703/exp
 * Typst
 
 #+begin_src elisp
-(use-package typst-ts-mode
-  :straight '(typst-ts-mode :type git :host sourcehut :repo "meow_king/typst-ts-mode"))
+;; (use-package typst-ts-mode
+;;   :straight '(typst-ts-mode :type git :host sourcehut :repo "meow_king/typst-ts-mode"))
 
-(add-to-list 'treesit-language-source-alist
-             '(typst "https://github.com/uben0/tree-sitter-typst"))
+;; (add-to-list 'treesit-language-source-alist
+;;              '(typst "https://github.com/uben0/tree-sitter-typst"))
 ;; (treesit-install-language-grammar 'typst)
 
 #+end_src

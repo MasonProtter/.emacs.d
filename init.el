@@ -7,6 +7,7 @@
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex -synctex=1")
  '(auto-revert-remote-files t)
+ '(company-dabbrev-downcase nil)
  '(company-dabbrev-ignore-case nil)
  '(company-minimum-prefix-length 3)
  '(custom-safe-themes
@@ -21,7 +22,7 @@
  '(julia-snail-popup-display-eval-results nil)
  '(julia-snail-show-error-window nil)
  '(julia-snail-terminal-type :eat)
- '(jupyter-executable "jupyter")
+ '(jupyter-executable "~/.julia/conda/3/x86_64/bin/jupyter")
  '(ns-alternate-modifier '(:ordinary meta :function meta :mouse meta))
  '(ns-command-modifier 'super)
  '(org-file-apps
