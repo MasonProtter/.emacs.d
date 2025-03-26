@@ -480,6 +480,10 @@ With argument ARG, do this that many times."
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown"))
+
+
+;; (use-package markdown-preview-mode
+;;   :ensure t)
 #+end_src
 
 * Julia
@@ -530,17 +534,17 @@ With argument ARG, do this that many times."
 (use-package popup
   :ensure t)
 
-(use-package jupyter
-  :ensure t
-  ;; :straight t
-  ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
-  :config
-  (require 'jupyter-julia)
-  (setq jupyter-eval-short-result-display-function 'popup-tip)
-  (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
-  ;; (setq jupyter-use-zmq nil)
+;; (use-package jupyter
+;;   :ensure t
+;;   ;; :straight t
+;;   ;; :straight (jupyter :type git :host github :branch "org-element-cache-issue" :repo "akirakyle/emacs-jupyter")
+;;   :config
+;;   (require 'jupyter-julia)
+;;   (setq jupyter-eval-short-result-display-function 'popup-tip)
+;;   (add-hook 'jupyter-repl-mode-hook 'rainbow-delimiters-mode-enable)
+;;   ;; (setq jupyter-use-zmq nil)
   
-  )
+;;   )
 
 
 ;; (defun my-jupyter-api-http-request--ignore-login-error-a
@@ -561,14 +565,7 @@ With argument ARG, do this that many times."
 
 * julia-snail
 
-
-
-#+begin_src elisp
-;; (straight-use-package 'julia-snail)
-
-;; (setq julia-snail-executable "~/julia-1.10/./julia")
-;; (add-hook 'julia-mode-hook #'julia-snail-mode)
-
+#+begin_src emacs-lisp
 ;; (use-package julia-snail
 ;;   ;; :ensure t
 ;;   :straight t
@@ -585,6 +582,15 @@ With argument ARG, do this that many times."
 ;;   :config
 ;;   (add-hook 'julia-mode-hook #'julia-snail-mode))
 
+#+end_src
+
+#+begin_src elisp
+;; (straight-use-package 'julia-snail)
+
+;; (setq julia-snail-executable "~/.juliaup/bin/julia")
+;; (add-hook 'julia-mode-hook #'julia-snail-mode)
+
+
 
 ;; (defun julia-snail--show-globals ()
 ;;   (interactive)
@@ -596,6 +602,18 @@ With argument ARG, do this that many times."
 
 
 #+end_src
+
+#+begin_src emacs-lisp
+  ;; (add-to-list 'load-path "~/.emacs.d/julia-snail")
+  ;; (require 'julia-snail)
+  ;; (add-hook 'julia-mode-hook #'julia-snail-mode)
+  ;; (julia-snail-terminal-type :eat)
+  ;; (julia-snail-executable "julia")
+  ;; (julia-snail-multimedia-enable t)
+  ;; (julia-snail-popup-display-eval-results nil)
+  ;; (julia-snail-show-error-window nil)
+#+end_src
+
 
 
 * Ob-julia
